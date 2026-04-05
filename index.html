@@ -1,743 +1,793 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Transition Feedback Portal - GitHub Cloud</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f5f7fb;
-      color: #1f2937;
-    }
-    .app-header {
-      background: #0f172a;
-      color: #fff;
-      padding: 16px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .app-header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
-    .app-header .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .container {
-      max-width: 1150px;
-      margin: 24px auto;
-      padding: 0 16px;
-    }
-    .card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 20px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-      margin-bottom: 20px;
-    }
-    .hidden { display: none !important; }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
-    }
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 10px;
-      font-size: 14px;
-      background: #fff;
-    }
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-    button {
-      border: none;
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      background: #2563eb;
-      color: #fff;
-    }
-    button.secondary { background: #475569; }
-    button.success { background: #059669; }
-    button.danger { background: #dc2626; }
-    button.warning { background: #d97706; }
-    button.light { background: #e2e8f0; color: #0f172a; }
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 16px;
-    }
-    .section-title {
-      margin: 0 0 16px;
-      font-size: 18px;
-      color: #0f172a;
-    }
-    .small-note {
-      font-size: 12px;
-      color: #64748b;
-      margin-top: 8px;
-      line-height: 1.5;
-    }
-    .status {
-      margin-top: 12px;
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 14px;
-      background: #eff6ff;
-      color: #1d4ed8;
-      border: 1px solid #bfdbfe;
-      word-break: break-word;
-    }
-    .status.error {
-      background: #fef2f2;
-      color: #b91c1c;
-      border-color: #fecaca;
-    }
-    .status.success {
-      background: #ecfdf5;
-      color: #047857;
-      border-color: #a7f3d0;
-    }
-    .status.warn {
-      background: #fff7ed;
-      color: #c2410c;
-      border-color: #fdba74;
-    }
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.55);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 16px;
-    }
-    .modal-overlay.active { display: flex; }
-    .modal {
-      width: 100%;
-      max-width: 760px;
-      background: #fff;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.18);
-      max-height: 90vh;
-      overflow: auto;
-    }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .modal-header h2 {
-      margin: 0;
-      font-size: 20px;
-    }
-    .close-btn {
-      background: #e2e8f0;
-      color: #0f172a;
-      padding: 8px 12px;
-    }
-    .login-page {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-    .login-card {
-      width: 100%;
-      max-width: 760px;
-      background: #fff;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 18px 45px rgba(0,0,0,0.12);
-    }
-    .login-title {
-      margin: 0 0 8px;
-      font-size: 24px;
-      color: #0f172a;
-    }
-    .login-subtitle {
-      margin: 0 0 18px;
-      color: #64748b;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-    .divider {
-      height: 1px;
-      background: #e2e8f0;
-      margin: 20px 0;
-    }
-    .readonly-box {
-      background: #f8fafc;
-      color: #0f172a;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Transition Feedback Portal | Secure</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; }
+        body { background: #f0f4f9; padding: 24px 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card { background: white; border-radius: 32px; box-shadow: 0 12px 30px rgba(0,0,0,0.05); padding: 1.8rem 2rem; margin-bottom: 2rem; border: 1px solid #e9edf2; }
+        h1 { font-size: 1.9rem; font-weight: 700; background: linear-gradient(135deg, #0f2b3d, #1e4a6e); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        h2 { font-size: 1.4rem; font-weight: 600; margin: 0 0 1.2rem 0; color: #0b2b3b; border-left: 5px solid #2c7da0; padding-left: 1rem; }
+        .form-row { display: flex; flex-wrap: wrap; gap: 1.2rem; margin-bottom: 1.2rem; align-items: flex-end; }
+        .form-group { flex: 1 1 220px; display: flex; flex-direction: column; gap: 6px; }
+        .full-width { flex: 1 1 100%; }
+        label { font-weight: 600; color: #2c3e50; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        input, select, textarea { padding: 12px 16px; border-radius: 20px; border: 1px solid #cfdfed; font-size: 0.9rem; background: #fff; transition: 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: #2c7da0; box-shadow: 0 0 0 3px rgba(44,125,160,0.15); outline: none; }
+        button { background: #1e2f3c; color: white; border: none; padding: 12px 28px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
+        button.primary { background: #1e5f7a; }
+        button.primary:hover { background: #0f4b63; }
+        button.secondary { background: #3a5468; }
+        button.outline { background: transparent; border: 1px solid #b9cfdf; color: #1f5e7a; }
+        .alert { background: #fef9e3; border-left: 5px solid #e6b12e; padding: 14px 18px; border-radius: 24px; margin: 1rem 0; }
+        .topic-item { background: #ffffff; border-radius: 24px; padding: 1.2rem; margin-bottom: 1rem; border: 1px solid #e2edf2; }
+        .ref-badge { background: #e9f2f5; color: #155f7c; padding: 5px 14px; border-radius: 40px; font-family: monospace; font-weight: bold; font-size: 0.8rem; }
+        .status-ack { background: #dcfce7; color: #15803d; border-radius: 30px; padding: 2px 14px; font-size: 0.7rem; font-weight: 600; }
+        .status-pending { background: #fff3e3; color: #b45f06; border-radius: 30px; padding: 2px 14px; font-size: 0.7rem; font-weight: 600; }
+        .manager-response { background: #f1f9fe; padding: 12px; border-radius: 20px; margin-top: 10px; border-left: 3px solid #2c7da0; font-size: 0.85rem; }
+        .email-log { background: #0a1c26; color: #b9dfef; border-radius: 24px; padding: 1rem; font-family: monospace; font-size: 0.75rem; max-height: 260px; overflow-y: auto; }
+        .stats-grid { display: flex; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .stat-card { background: linear-gradient(145deg, #ffffff, #fafdff); border-radius: 32px; padding: 1.2rem 1rem; text-align: center; flex: 1 1 180px; border: 1px solid #e0ecf3; }
+        .stat-number { font-size: 2.8rem; font-weight: 800; color: #1b5e7a; line-height: 1; }
+        .stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #4a6272; }
+        .filter-tabs { display: flex; gap: 12px; margin-bottom: 1.8rem; flex-wrap: wrap; }
+        .filter-btn { background: #f0f4fa; color: #2c3e50; padding: 8px 18px; border-radius: 60px; font-weight: 600; font-size: 0.8rem; cursor: pointer; }
+        .filter-btn.active { background: #1e5f7a; color: white; }
+        .hidden { display: none; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .login-modal, .verify-modal, .admin-login-modal, .custom-confirm-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        .login-card, .verify-card, .admin-login-card, .confirm-card { background: white; border-radius: 48px; padding: 2rem; width: 360px; text-align: center; }
+        .confirm-card button { margin: 0 8px; }
+        @media (max-width: 720px) { .card { padding: 1.2rem; } .stats-grid { flex-direction: column; } }
+        .user-status-tabs { display: flex; gap: 12px; margin-bottom: 1rem; flex-wrap: wrap; }
+        .user-status-btn { background: #eef2ff; padding: 6px 16px; border-radius: 40px; cursor: pointer; font-size: 0.8rem; }
+        .user-status-btn.active { background: #1e5f7a; color: white; }
+        .readonly-response { background: #f1f5f9; padding: 10px; border-radius: 16px; color: #2c3e50; margin-top: 8px; font-style: normal; }
+        .email-btn { background: none; border: none; color: #1e5f7a; cursor: pointer; font-size: 1rem; margin-left: 10px; vertical-align: middle; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 1rem; }
+        .search-box input { flex: 1; }
+        .logout-btn { background: #6c757d; margin-left: 15px; }
+        .welcome-hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #eef2f9 0%, #d9e4f0 100%);
+            border-radius: 48px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .welcome-hero::before { content: ""; position: absolute; top: -30%; right: -20%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(44,125,160,0.1) 0%, rgba(44,125,160,0) 70%); border-radius: 50%; z-index: 0; }
+        .welcome-hero::after { content: ""; position: absolute; bottom: -20%; left: -10%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(30,95,122,0.08) 0%, rgba(30,95,122,0) 70%); border-radius: 50%; z-index: 0; }
+        .welcome-card { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-radius: 64px; padding: 3rem 2.5rem; max-width: 500px; width: 100%; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.3); z-index: 1; transition: transform 0.3s ease; }
+        .welcome-card:hover { transform: scale(1.02); }
+        .welcome-icon { font-size: 4.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #1e5f7a, #2c7da0); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .welcome-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, #0f2b3d, #1e5f7a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .welcome-desc { color: #2c3e50; margin-bottom: 2rem; font-size: 1rem; line-height: 1.5; }
+        .start-btn { background: linear-gradient(135deg, #1e5f7a, #2c7da0); color: white; border: none; padding: 14px 42px; font-size: 1.2rem; font-weight: 600; border-radius: 60px; cursor: pointer; transition: all 0.2s; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .start-btn:hover { transform: translateY(-3px); background: #0f4b63; }
+        @media (max-width: 640px) { .welcome-card { padding: 2rem 1.5rem; } .welcome-title { font-size: 1.8rem; } }
+        .dept-other-input { margin-top: 8px; }
+        .inline-response-editor { margin-top: 12px; background: #f9fbfd; border-radius: 20px; padding: 12px; border: 1px solid #dce5ec; }
+        .inline-response-editor textarea { width: 100%; margin-bottom: 10px; }
+        .edit-response-btn { background: #2c7da0; color: white; border: none; padding: 6px 16px; border-radius: 40px; font-size: 0.75rem; cursor: pointer; margin-left: 12px; }
+        .ack-checkbox { margin-right: 6px; cursor: pointer; }
+    </style>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>
+        const EMAILJS_PUBLIC_KEY = "I211XCe29cZnHyL69";
+        const EMAILJS_SERVICE_ID = "service_uahynxq";
+        const EMAILJS_TEMPLATE_ID = "template_4rjgjxa";
+        (function() { emailjs.init(EMAILJS_PUBLIC_KEY); })();
+    </script>
 </head>
 <body>
-  <section id="loginPage" class="login-page">
-    <div class="login-card">
-      <h1 class="login-title">Transition Feedback Portal</h1>
-      <p class="login-subtitle">
-        This version uses one GitHub Gist only. Each record is saved under a unique Reference Number inside the same JSON file.
-      </p>
-
-      <div class="grid">
-        <div>
-          <label for="loginUserName">User Name</label>
-          <input id="loginUserName" type="text" placeholder="Enter your name" />
-        </div>
-        <div>
-          <label for="loginUserEmail">Email</label>
-          <input id="loginUserEmail" type="email" placeholder="Enter your email" />
-        </div>
-      </div>
-
-      <div class="toolbar">
-        <button type="button" onclick="enterPortal()">Continue</button>
-        <button type="button" class="secondary" onclick="openGitHubSettings()">GitHub Cloud Settings</button>
-      </div>
-
-      <div class="divider"></div>
-
-      <h3 class="section-title">GitHub Cloud Settings</h3>
-      <div class="grid">
-        <div>
-          <label for="githubTokenLogin">GitHub Personal Access Token</label>
-          <input id="githubTokenLogin" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
-        </div>
-        <div>
-          <label for="githubGistIdLogin">Master Gist ID</label>
-          <input id="githubGistIdLogin" type="text" placeholder="Paste your single Gist ID here" />
-        </div>
-        <div>
-          <label for="githubFilenameLogin">Filename inside Gist</label>
-          <input id="githubFilenameLogin" type="text" value="transition-feedback-data.json" />
-        </div>
-        <div>
-          <label for="rememberGithubSettingsLogin">Remember settings on this device</label>
-          <select id="rememberGithubSettingsLogin">
-            <option value="yes" selected>Yes</option>
-            <option value="no">No</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="toolbar">
-        <button type="button" class="success" onclick="saveToGitHubCloud()">Save by REF</button>
-        <button type="button" class="warning" onclick="loadFromGitHubCloud()">Load by REF</button>
-        <button type="button" class="danger" onclick="clearGitHubSettings()">Clear GitHub Settings</button>
-      </div>
-
-      <div id="githubStatusLogin" class="status">Ready.</div>
-      <div class="small-note">
-        Privacy here is controlled by Reference Number inside one master Gist. Keep your token private.
-      </div>
+<div class="container" id="appContainer">
+    <div class="flex-between" style="margin-bottom: 1rem;" id="headerArea">
+        <h1>📋 Transition Feedback Portal</h1>
+        <div id="logoutContainer"></div>
     </div>
-  </section>
 
-  <section id="mainApp" class="hidden">
-    <header class="app-header">
-      <h1>Transition Feedback Portal</h1>
-      <div class="actions">
-        <button type="button" class="light" onclick="openGitHubSettings()">GitHub Settings</button>
-        <button type="button" class="success" onclick="saveToGitHubCloud()">Save by REF</button>
-        <button type="button" class="warning" onclick="loadFromGitHubCloud()">Load by REF</button>
-      </div>
-    </header>
-
-    <div class="container">
-      <div class="card">
-        <h2 class="section-title">Record Control</h2>
-        <div class="grid">
-          <div>
-            <label for="refNumber">Reference Number</label>
-            <input id="refNumber" type="text" class="readonly-box" placeholder="Auto-generated on first save or enter existing REF" />
-          </div>
-          <div>
-            <label for="requestedAction">Requested Action</label>
-            <select id="requestedAction">
-              <option value="new_or_update">Save new or update existing record</option>
-              <option value="load_existing">Load existing record</option>
-            </select>
-          </div>
+    <div id="roleSelection" class="welcome-hero">
+        <div class="welcome-card">
+            <div class="welcome-icon">✨</div>
+            <h2 class="welcome-title">Transition Hub</h2>
+            <p class="welcome-desc">Submit feedback, track acknowledgments, and collaborate with leadership.</p>
+            <button id="startPortalBtn" class="start-btn">🚀 Start</button>
+            <p style="font-size: 0.7rem; margin-top: 1.8rem; color: #6c7e8f;">🔒 Secure portal · real-time updates</p>
         </div>
-        <div class="small-note">
-          Leave Reference Number empty for a new record. To open an existing record, enter its REF and click Load by REF.
-        </div>
-      </div>
-
-      <div class="card">
-        <h2 class="section-title">Portal Information</h2>
-        <div class="grid">
-          <div>
-            <label for="topic">Topic</label>
-            <input id="topic" type="text" placeholder="Enter topic" />
-          </div>
-          <div>
-            <label for="requestedBy">Requested By</label>
-            <input id="requestedBy" type="text" placeholder="Enter requester name" />
-          </div>
-          <div>
-            <label for="decisionOwner">Decision Owner</label>
-            <input id="decisionOwner" type="text" placeholder="Enter decision owner" />
-          </div>
-          <div>
-            <label for="decisionDate">Decision Date</label>
-            <input id="decisionDate" type="date" />
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2 class="section-title">Sections</h2>
-        <div class="grid">
-          <div>
-            <label for="section1">Section 1</label>
-            <textarea id="section1" placeholder="Enter section 1"></textarea>
-          </div>
-          <div>
-            <label for="section2">Section 2</label>
-            <textarea id="section2" placeholder="Enter section 2"></textarea>
-          </div>
-          <div>
-            <label for="section3">Section 3</label>
-            <textarea id="section3" placeholder="Enter section 3"></textarea>
-          </div>
-          <div>
-            <label for="section4">Section 4</label>
-            <textarea id="section4" placeholder="Enter section 4"></textarea>
-          </div>
-          <div>
-            <label for="section5">Section 5</label>
-            <textarea id="section5" placeholder="Enter section 5"></textarea>
-          </div>
-          <div>
-            <label for="section6">Section 6</label>
-            <textarea id="section6" placeholder="Enter section 6"></textarea>
-          </div>
-          <div style="grid-column: 1 / -1;">
-            <label for="section7">Decision / Final Notes</label>
-            <textarea id="section7" placeholder="Enter section 7"></textarea>
-          </div>
-        </div>
-
-        <div class="toolbar">
-          <button type="button" onclick="saveLocalDraft()">Save Local Draft</button>
-          <button type="button" class="warning" onclick="loadLocalDraft()">Load Local Draft</button>
-          <button type="button" class="danger" onclick="clearFormData()">Clear Form</button>
-        </div>
-
-        <div id="portalStatus" class="status">Portal ready.</div>
-      </div>
     </div>
-  </section>
 
-  <div id="githubModalOverlay" class="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>GitHub Cloud Settings</h2>
-        <button type="button" class="close-btn" onclick="closeGitHubSettings()">Close</button>
-      </div>
+    <div id="userSection" class="hidden">
+        <div class="card">
+            <h2>✍️ Submit feedback</h2>
+            <div class="form-row">
+                <div class="form-group"><label>Full Name *</label><input type="text" id="empName" placeholder="e.g. Layla Hassan"></div>
+                <div class="form-group"><label>Email *</label><input type="email" id="empEmail" placeholder="employee@domain.com"></div>
+                <div class="form-group"><label>Location *</label>
+                    <select id="empLocation">
+                        <option value="Deira">Deira</option><option value="Sharjah">Sharjah</option><option value="RAK">RAK</option>
+                        <option value="Fujairah">Fujairah</option><option value="Brand Center">Brand Center</option>
+                        <option value="SZR">SZR</option><option value="JAFZA">JAFZA</option><option value="Al Quoz">Al Quoz</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Department *</label>
+                    <select id="empDept">
+                        <option value="Sales">Sales</option><option value="Aftersales">Aftersales</option>
+                        <option value="CVM">CVM</option><option value="Operations">Operations</option>
+                        <option value="Finance">Finance</option><option value="IT">IT</option>
+                        <option value="HR">HR</option><option value="Other">Other</option>
+                    </select>
+                    <div id="otherDeptContainer" class="dept-other-input hidden"><input type="text" id="otherDeptInput" placeholder="Please specify department" style="width:100%;"></div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Category *</label>
+                    <select id="feedbackCategory">
+                        <option value="Clarification">Clarification — e.g. Require updates</option>
+                        <option value="Risk / Escalation">Risk / Escalation — e.g. report Miscommunication</option>
+                        <option value="Operations">Operations — e.g. Process/System Related</option>
+                        <option value="General Feedback">General Feedback — e.g. Ideas</option>
+                    </select>
+                </div>
+                <div class="form-group full-width" style="flex:2"><label>Topic / Subject *</label><input type="text" id="topicTitle" placeholder="e.g., ERP migration delays"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group full-width"><label>Description / Feedback *</label><textarea id="feedbackDesc" rows="3" placeholder="Provide detailed feedback..."></textarea></div>
+            </div>
+            <button id="submitFeedbackBtn" class="primary">📨 Submit feedback →</button>
+            <div id="userMessageArea" class="alert hidden"></div>
+        </div>
 
-      <div class="grid">
-        <div>
-          <label for="githubTokenModal">GitHub Personal Access Token</label>
-          <input id="githubTokenModal" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+        <div class="card">
+            <div class="flex-between"><h2>🔍 My Feedback</h2></div>
+            <div class="search-box">
+                <input type="text" id="searchTopicsInput" placeholder="Search by topic title or reference...">
+                <button id="searchTopicsBtn" class="secondary">🔎 Filter</button>
+                <button id="resetSearchBtn" class="outline">Reset</button>
+            </div>
+            <div id="userStatusTabs" class="user-status-tabs">
+                <div class="user-status-btn active" data-ustatus="all">📋 All Topics</div>
+                <div class="user-status-btn" data-ustatus="pending">⏳ Pending Acknowledgment</div>
+                <div class="user-status-btn" data-ustatus="resolved">✅ Acknowledged</div>
+            </div>
+            <div id="myTopicsContainer"></div>
         </div>
-        <div>
-          <label for="githubGistIdModal">Master Gist ID</label>
-          <input id="githubGistIdModal" type="text" placeholder="Paste your single Gist ID here" />
-        </div>
-        <div>
-          <label for="githubFilenameModal">Filename inside Gist</label>
-          <input id="githubFilenameModal" type="text" value="transition-feedback-data.json" />
-        </div>
-        <div>
-          <label for="rememberGithubSettingsModal">Remember settings on this device</label>
-          <select id="rememberGithubSettingsModal">
-            <option value="yes" selected>Yes</option>
-            <option value="no">No</option>
-          </select>
-        </div>
-      </div>
 
-      <div class="toolbar">
-        <button type="button" class="success" onclick="saveToGitHubCloud()">Save by REF</button>
-        <button type="button" class="warning" onclick="loadFromGitHubCloud()">Load by REF</button>
-        <button type="button" class="danger" onclick="clearGitHubSettings()">Clear GitHub Settings</button>
-      </div>
-
-      <div id="githubStatusModal" class="status">Ready.</div>
-      <div class="small-note">
-        Use one master Gist and one JSON file only. Every record is stored under its own Reference Number.
-      </div>
+        <div class="card">
+            <h2>📧 Notification Log</h2>
+            <div id="emailLog" class="email-log">✨ System ready. Portal notifications will appear here.</div>
+            <p style="font-size:0.7rem; margin-top:8px;">✅ Notifications are sent via portal & email verification.</p>
+        </div>
     </div>
-  </div>
 
-  <script>
-    const LOCAL_DRAFT_KEY = "transition_feedback_portal_local_draft";
-    const GITHUB_STORAGE_KEYS = {
-      token: "github_token",
-      gistId: "github_gist_id",
-      filename: "github_filename",
-      remember: "github_remember"
-    };
+    <div id="managerDashboard" class="card hidden">
+        <div class="flex-between">
+            <h2>📊 Admin Dashboard</h2>
+            <div><button id="changeAdminPasswordBtn" class="outline">🔑 Change Password</button><button id="refreshManagerBtn" class="outline" style="margin-left:10px;">⟳ Refresh</button></div>
+        </div>
+        <div class="stats-grid" id="statsGrid"></div>
+        <div class="filter-tabs" id="filterTabs">
+            <div class="filter-btn active" data-filter="all">📋 All Topics</div>
+            <div class="filter-btn" data-filter="pending">⏳ Pending Acknowledgment</div>
+            <div class="filter-btn" data-filter="resolved">✅ Acknowledged</div>
+        </div>
+        <div id="managerTopicsList" style="max-height: 65vh; overflow-y: auto; padding-right: 6px;"></div>
+    </div>
+</div>
 
-    function syncGitHubInputs(data = {}) {
-      const token = data.token ?? getFieldValue(["githubTokenLogin", "githubTokenModal"]);
-      const gistId = data.gistId ?? getFieldValue(["githubGistIdLogin", "githubGistIdModal"]);
-      const filename = data.filename ?? getFieldValue(["githubFilenameLogin", "githubFilenameModal"]) || "transition-feedback-data.json";
-      const remember = data.remember ?? getRememberValue();
+<script>
+    // ---------- CONFIG ----------
+    const WEB3FORMS_ACCESS_KEY = "5866f22e-149f-4545-bb8e-84bd2a2d9e86";
+    const ADMIN_EMAIL = "remaz.abdallah@gargash.ae";
+    const DEFAULT_ADMIN_PASSWORD = "admin123";
 
-      setValue("githubTokenLogin", token);
-      setValue("githubTokenModal", token);
-      setValue("githubGistIdLogin", gistId);
-      setValue("githubGistIdModal", gistId);
-      setValue("githubFilenameLogin", filename);
-      setValue("githubFilenameModal", filename);
-      setValue("rememberGithubSettingsLogin", remember);
-      setValue("rememberGithubSettingsModal", remember);
+    // HTML-only GitHub sync (insecure because token is in source)
+    const GITHUB_TOKEN = "PASTE_YOUR_NEW_GITHUB_TOKEN_HERE";
+    const GITHUB_GIST_ID = "e6eb383ed3bbd47122aa0e6f05f30604";
+    const GITHUB_FILENAME = "transition-feedback-data.json";
+    const LOCAL_FALLBACK_KEY = "feedback_topics_v13_backup";
+
+    let allTopics = [];
+    let currentManagerFilter = "all";
+    let managerLoggedIn = false;
+    let pollingInterval = null;
+    let lastDataChecksum = "";
+    let currentUserEmail = "";
+    let currentUserStatusFilter = "all";
+    let currentSearchTerm = "";
+    let activeRole = null;
+    let verificationCode = null, verificationExpiry = null;
+    const welcomeHTML = document.getElementById("roleSelection").outerHTML;
+
+    function customConfirm(message) {
+        return new Promise((resolve) => {
+            const modalDiv = document.createElement("div");
+            modalDiv.className = "custom-confirm-modal";
+            modalDiv.innerHTML = `
+                <div class="confirm-card">
+                    <p style="margin-bottom: 20px; white-space: pre-line;">${escapeHtml(message)}</p>
+                    <button id="confirmYesBtn" class="primary" style="margin-right: 10px;">Yes</button>
+                    <button id="confirmNoBtn" class="outline">No</button>
+                </div>
+            `;
+            document.body.appendChild(modalDiv);
+            modalDiv.querySelector("#confirmYesBtn").onclick = () => { modalDiv.remove(); resolve(true); };
+            modalDiv.querySelector("#confirmNoBtn").onclick = () => { modalDiv.remove(); resolve(false); };
+        });
     }
 
-    function getFieldValue(ids) {
-      for (const id of ids) {
-        const el = document.getElementById(id);
-        if (el && typeof el.value !== "undefined" && String(el.value).trim() !== "") {
-          return String(el.value).trim();
-        }
-      }
-      return "";
+    function computeChecksum() { return JSON.stringify(allTopics).length + "-" + allTopics.length; }
+    function escapeHtml(str){ if(!str) return ""; return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; return '&gt;';}); }
+    function addToLog(msg, isError = false) {
+        const logDiv = document.getElementById("emailLog");
+        if(!logDiv) return;
+        const entry = document.createElement("div");
+        entry.style.borderBottom = "1px solid #2c4a5e";
+        entry.style.padding = "5px 0";
+        entry.style.color = isError ? "#ffb4a2" : "#bbdef5";
+        entry.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${escapeHtml(msg)}`;
+        logDiv.prepend(entry);
     }
 
-    function getRememberValue() {
-      const login = document.getElementById("rememberGithubSettingsLogin");
-      const modal = document.getElementById("rememberGithubSettingsModal");
-      if (login && login.value) return login.value;
-      if (modal && modal.value) return modal.value;
-      return "yes";
-    }
-
-    function setValue(id, value) {
-      const el = document.getElementById(id);
-      if (el) el.value = value;
-    }
-
-    function setStatus(message, type = "info") {
-      ["githubStatusLogin", "githubStatusModal", "portalStatus"].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.textContent = message;
-        el.className = "status";
-        if (type === "error") el.classList.add("error");
-        if (type === "success") el.classList.add("success");
-        if (type === "warn") el.classList.add("warn");
-      });
-    }
-
-    function openGitHubSettings() {
-      document.getElementById("githubModalOverlay").classList.add("active");
-      syncGitHubInputs();
-    }
-
-    function closeGitHubSettings() {
-      document.getElementById("githubModalOverlay").classList.remove("active");
-    }
-
-    function enterPortal() {
-      document.getElementById("loginPage").classList.add("hidden");
-      document.getElementById("mainApp").classList.remove("hidden");
-      setStatus("Portal opened.");
-    }
-
-    function generateRef() {
-      return "REF-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-    }
-
-    function collectAppData() {
-      return {
-        metadata: {
-          savedAt: new Date().toISOString(),
-          appName: "Transition Feedback Portal"
-        },
-        login: {
-          userName: document.getElementById("loginUserName")?.value || "",
-          userEmail: document.getElementById("loginUserEmail")?.value || ""
-        },
-        formData: {
-          topic: document.getElementById("topic")?.value || "",
-          requestedBy: document.getElementById("requestedBy")?.value || "",
-          decisionOwner: document.getElementById("decisionOwner")?.value || "",
-          decisionDate: document.getElementById("decisionDate")?.value || "",
-          section1: document.getElementById("section1")?.value || "",
-          section2: document.getElementById("section2")?.value || "",
-          section3: document.getElementById("section3")?.value || "",
-          section4: document.getElementById("section4")?.value || "",
-          section5: document.getElementById("section5")?.value || "",
-          section6: document.getElementById("section6")?.value || "",
-          section7: document.getElementById("section7")?.value || ""
-        }
-      };
-    }
-
-    function populateAppData(data) {
-      if (!data) return;
-
-      const login = data.login || {};
-      const formData = data.formData || {};
-
-      setValue("loginUserName", login.userName || "");
-      setValue("loginUserEmail", login.userEmail || "");
-      setValue("topic", formData.topic || "");
-      setValue("requestedBy", formData.requestedBy || "");
-      setValue("decisionOwner", formData.decisionOwner || "");
-      setValue("decisionDate", formData.decisionDate || "");
-      setValue("section1", formData.section1 || "");
-      setValue("section2", formData.section2 || "");
-      setValue("section3", formData.section3 || "");
-      setValue("section4", formData.section4 || "");
-      setValue("section5", formData.section5 || "");
-      setValue("section6", formData.section6 || "");
-      setValue("section7", formData.section7 || "");
-    }
-
-    function saveLocalDraft() {
-      const data = collectAppData();
-      localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(data));
-      setStatus("Local draft saved successfully.", "success");
-    }
-
-    function loadLocalDraft() {
-      const raw = localStorage.getItem(LOCAL_DRAFT_KEY);
-      if (!raw) {
-        setStatus("No local draft found.", "warn");
-        return;
-      }
-      try {
-        const data = JSON.parse(raw);
-        populateAppData(data);
-        setStatus("Local draft loaded successfully.", "success");
-      } catch (error) {
-        setStatus("Could not read local draft.", "error");
-      }
-    }
-
-    function clearFormData() {
-      [
-        "topic", "requestedBy", "decisionOwner", "decisionDate",
-        "section1", "section2", "section3", "section4", "section5", "section6", "section7"
-      ].forEach(id => setValue(id, ""));
-      setValue("refNumber", "");
-      setStatus("Form cleared.");
-    }
-
-    function saveGitHubSettingsLocally() {
-      const token = getFieldValue(["githubTokenLogin", "githubTokenModal"]);
-      const gistId = getFieldValue(["githubGistIdLogin", "githubGistIdModal"]);
-      const filename = getFieldValue(["githubFilenameLogin", "githubFilenameModal"]) || "transition-feedback-data.json";
-      const remember = getRememberValue();
-
-      syncGitHubInputs({ token, gistId, filename, remember });
-
-      if (remember === "yes") {
-        localStorage.setItem(GITHUB_STORAGE_KEYS.token, token);
-        localStorage.setItem(GITHUB_STORAGE_KEYS.gistId, gistId);
-        localStorage.setItem(GITHUB_STORAGE_KEYS.filename, filename);
-        localStorage.setItem(GITHUB_STORAGE_KEYS.remember, remember);
-      } else {
-        localStorage.removeItem(GITHUB_STORAGE_KEYS.token);
-        localStorage.removeItem(GITHUB_STORAGE_KEYS.gistId);
-        localStorage.removeItem(GITHUB_STORAGE_KEYS.filename);
-        localStorage.removeItem(GITHUB_STORAGE_KEYS.remember);
-      }
-    }
-
-    function loadSavedGitHubSettings() {
-      const token = localStorage.getItem(GITHUB_STORAGE_KEYS.token) || "";
-      const gistId = localStorage.getItem(GITHUB_STORAGE_KEYS.gistId) || "";
-      const filename = localStorage.getItem(GITHUB_STORAGE_KEYS.filename) || "transition-feedback-data.json";
-      const remember = localStorage.getItem(GITHUB_STORAGE_KEYS.remember) || "yes";
-      syncGitHubInputs({ token, gistId, filename, remember });
-    }
-
-    function clearGitHubSettings() {
-      Object.values(GITHUB_STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
-      syncGitHubInputs({ token: "", gistId: "", filename: "transition-feedback-data.json", remember: "yes" });
-      setStatus("GitHub settings cleared.", "success");
-    }
-
-    async function fetchMasterGist(token, gistId) {
-      const response = await fetch(`https://api.github.com/gists/${gistId}`, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Accept": "application/vnd.github+json"
-        }
-      });
-
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to read master Gist.");
-      }
-      return result;
-    }
-
-    function getRecordsFromGistFile(gist, filename) {
-      const file = gist.files?.[filename];
-      if (!file || !file.content) {
-        return { records: {} };
-      }
-
-      let parsed;
-      try {
-        parsed = JSON.parse(file.content);
-      } catch (error) {
-        throw new Error("The JSON file inside the Gist is not valid.");
-      }
-
-      if (!parsed.records || typeof parsed.records !== "object") {
-        parsed.records = {};
-      }
-      return parsed;
-    }
-
-    async function updateMasterGist(token, gistId, filename, contentObject) {
-      const response = await fetch(`https://api.github.com/gists/${gistId}`, {
-        method: "PATCH",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Accept": "application/vnd.github+json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          files: {
-            [filename]: {
-              content: JSON.stringify(contentObject, null, 2)
-            }
-          }
-        })
-      });
-
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to update master Gist.");
-      }
-      return result;
-    }
-
-    async function saveToGitHubCloud() {
-      try {
-        saveGitHubSettingsLocally();
-
-        const token = getFieldValue(["githubTokenLogin", "githubTokenModal"]);
-        const gistId = getFieldValue(["githubGistIdLogin", "githubGistIdModal"]);
-        const filename = getFieldValue(["githubFilenameLogin", "githubFilenameModal"]) || "transition-feedback-data.json";
-
-        if (!token) {
-          setStatus("Please enter your GitHub token.", "error");
-          return;
-        }
-        if (!gistId) {
-          setStatus("Please enter your single master Gist ID.", "error");
-          return;
-        }
-
-        let ref = (document.getElementById("refNumber")?.value || "").trim();
-        if (!ref) {
-          ref = generateRef();
-          setValue("refNumber", ref);
-        }
-
-        setStatus("Saving record to master Gist...");
-
-        const gist = await fetchMasterGist(token, gistId);
-        const contentObject = getRecordsFromGistFile(gist, filename);
-
-        contentObject.records[ref] = {
-          refNumber: ref,
-          updatedAt: new Date().toISOString(),
-          data: collectAppData()
+    function getStorageEnvelope() {
+        return {
+            adminPassword: localStorage.getItem("admin_password") || DEFAULT_ADMIN_PASSWORD,
+            verifiedEmail: localStorage.getItem("verifiedEmail") || "",
+            verifiedTimestamp: localStorage.getItem("verifiedTimestamp") || "",
+            topics: allTopics
         };
-
-        await updateMasterGist(token, gistId, filename, contentObject);
-        saveGitHubSettingsLocally();
-
-        setStatus(`Saved successfully. Reference Number: ${ref}`, "success");
-      } catch (error) {
-        setStatus(`GitHub save failed: ${error.message}`, "error");
-      }
     }
 
-    async function loadFromGitHubCloud() {
-      try {
-        saveGitHubSettingsLocally();
-
-        const token = getFieldValue(["githubTokenLogin", "githubTokenModal"]);
-        const gistId = getFieldValue(["githubGistIdLogin", "githubGistIdModal"]);
-        const filename = getFieldValue(["githubFilenameLogin", "githubFilenameModal"]) || "transition-feedback-data.json";
-        const ref = (document.getElementById("refNumber")?.value || "").trim();
-
-        if (!token) {
-          setStatus("Please enter your GitHub token.", "error");
-          return;
-        }
-        if (!gistId) {
-          setStatus("Please enter your single master Gist ID.", "error");
-          return;
-        }
-        if (!ref) {
-          setStatus("Please enter the Reference Number to load a record.", "error");
-          return;
-        }
-
-        setStatus("Loading record from master Gist...");
-
-        const gist = await fetchMasterGist(token, gistId);
-        const contentObject = getRecordsFromGistFile(gist, filename);
-        const record = contentObject.records?.[ref];
-
-        if (!record) {
-          throw new Error("Reference Number not found.");
-        }
-
-        populateAppData(record.data);
-        setValue("refNumber", ref);
-        setStatus(`Record loaded successfully for ${ref}`, "success");
-      } catch (error) {
-        setStatus(`GitHub load failed: ${error.message}`, "error");
-      }
+    function applyEnvelope(envelope) {
+        const safe = envelope && typeof envelope === 'object' ? envelope : {};
+        allTopics = Array.isArray(safe.topics) ? safe.topics : [];
+        if (safe.adminPassword) localStorage.setItem("admin_password", safe.adminPassword);
+        if (safe.verifiedEmail) localStorage.setItem("verifiedEmail", safe.verifiedEmail);
+        if (safe.verifiedTimestamp) localStorage.setItem("verifiedTimestamp", safe.verifiedTimestamp);
+        localStorage.setItem(LOCAL_FALLBACK_KEY, JSON.stringify(safe));
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      loadSavedGitHubSettings();
-      loadLocalDraft();
+    async function fetchGistJson() {
+        if (!GITHUB_TOKEN || GITHUB_TOKEN === "PASTE_YOUR_NEW_GITHUB_TOKEN_HERE") {
+            throw new Error("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");
+        }
+        const response = await fetch(`https://api.github.com/gists/${GITHUB_GIST_ID}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${GITHUB_TOKEN}`,
+                "Accept": "application/vnd.github+json",
+                "User-Agent": "transition-feedback-portal"
+            }
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || "Failed to read GitHub Gist.");
+        const file = result.files?.[GITHUB_FILENAME];
+        if (!file?.content) return { topics: [], adminPassword: DEFAULT_ADMIN_PASSWORD };
+        try {
+            const parsed = JSON.parse(file.content);
+            if (!Array.isArray(parsed.topics)) parsed.topics = [];
+            return parsed;
+        } catch {
+            throw new Error("Gist JSON is invalid.");
+        }
+    }
+
+    async function pushGistJson(payload) {
+        if (!GITHUB_TOKEN || GITHUB_TOKEN === "PASTE_YOUR_NEW_GITHUB_TOKEN_HERE") {
+            throw new Error("Add your new GitHub token in GITHUB_TOKEN first.");
+        }
+        const response = await fetch(`https://api.github.com/gists/${GITHUB_GIST_ID}`, {
+            method: "PATCH",
+            headers: {
+                "Authorization": `Bearer ${GITHUB_TOKEN}`,
+                "Accept": "application/vnd.github+json",
+                "Content-Type": "application/json",
+                "User-Agent": "transition-feedback-portal"
+            },
+            body: JSON.stringify({
+                files: {
+                    [GITHUB_FILENAME]: {
+                        content: JSON.stringify(payload, null, 2)
+                    }
+                }
+            })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || "Failed to update GitHub Gist.");
+        return result;
+    }
+
+    async function loadData(showLog = false) {
+        try {
+            const envelope = await fetchGistJson();
+            applyEnvelope(envelope);
+            if (showLog) addToLog(`☁️ GitHub sync loaded (${allTopics.length} topics)`);
+        } catch (error) {
+            const fallback = localStorage.getItem(LOCAL_FALLBACK_KEY);
+            if (fallback) {
+                try {
+                    applyEnvelope(JSON.parse(fallback));
+                    if (showLog) addToLog(`⚠️ GitHub load failed, local backup used: ${error.message}`, true);
+                    return;
+                } catch {}
+            }
+            allTopics = [];
+            if (showLog) addToLog(`❌ GitHub load failed: ${error.message}`, true);
+        }
+    }
+
+    async function saveData(showLog = false) {
+        const envelope = getStorageEnvelope();
+        localStorage.setItem(LOCAL_FALLBACK_KEY, JSON.stringify(envelope));
+        try {
+            await pushGistJson(envelope);
+            if (showLog) addToLog(`☁️ GitHub sync saved (${allTopics.length} topics)`);
+        } catch (error) {
+            if (showLog) addToLog(`❌ GitHub save failed: ${error.message}`, true);
+            throw error;
+        }
+    }
+
+    async function sendPortalEmail(subject, body, userEmail, userName) {
+        if (!WEB3FORMS_ACCESS_KEY) { addToLog("⚠️ Web3Forms key missing", true); return false; }
+        const fd = new FormData();
+        fd.append("access_key", WEB3FORMS_ACCESS_KEY);
+        fd.append("subject", subject);
+        fd.append("from_name", userName);
+        fd.append("from_email", userEmail);
+        fd.append("message", body);
+        fd.append("replyto", userEmail);
+        try {
+            const res = await fetch("https://api.web3forms.com/submit", { method: "POST", body: fd });
+            const json = await res.json();
+            if(json.success) { addToLog(`📨 Portal notification sent (${subject})`); return true; }
+            else { addToLog(`❌ Portal email fail: ${json.message}`, true); return false; }
+        } catch(e) { addToLog(`❌ Portal error: ${e.message}`, true); return false; }
+    }
+
+    async function sendVerificationCode(email, code) {
+        const templateParams = { to_email: email, verification_code: code, portal_name: "Transition Feedback Portal", current_year: new Date().getFullYear() };
+        try {
+            const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+            if (response.status === 200) { addToLog(`✉️ Verification code sent to ${email}`); return true; }
+            else { addToLog(`❌ EmailJS send failed`, true); return false; }
+        } catch(err) { addToLog(`❌ EmailJS error: ${err.message}`, true); return false; }
+    }
+
+    async function sendNotifications(topic, desc, isNewTopic) {
+        const ref = topic.ref;
+        const adminLink = `${window.location.origin}${window.location.pathname}?admin=1`;
+        const portalSubject = `Transition Feedback · ${isNewTopic ? 'New Topic' : 'New Item'} · ${ref}`;
+        const portalBody = `Ref: ${ref}\nTopic: ${topic.topicTitle}\nUser: ${topic.userName} (${topic.userEmail})\nCategory: ${topic.category}\nFeedback: ${desc}\nManage: ${adminLink}`;
+        await sendPortalEmail(portalSubject, portalBody, topic.userEmail, topic.userName);
+        addToLog(`📬 Portal notification sent for ${ref}`);
+    }
+
+    function generateRef() { return "REF-" + Math.random().toString(36).substring(2, 8).toUpperCase(); }
+    function createNewTopic(user, category, topicTitle, desc) {
+        const ref = generateRef();
+        const newTopic = { ref, userName: user.name, userEmail: user.email, userLocation: user.location, userDepartment: user.department, category, topicTitle, createdAt: new Date().toISOString(), issues: [{ itemId: Date.now(), description: desc, date: new Date().toISOString(), acknowledged: false, managerResponse: "" }] };
+        allTopics.push(newTopic);
+        return newTopic;
+    }
+    function addItemToTopic(ref, itemDesc, userEmail) {
+        const topic = allTopics.find(t => t.ref === ref);
+        if (!topic) return { success: false, msg: "Ref not found" };
+        if (topic.userEmail !== userEmail) return { success: false, msg: "Email mismatch" };
+        topic.issues.push({ itemId: Date.now(), description: itemDesc, date: new Date().toISOString(), acknowledged: false, managerResponse: "" });
+        return { success: true, topic };
+    }
+
+    function longestCommonSubstringLen(a, b) {
+        let maxLen = 0;
+        for (let i = 0; i < a.length; i++) {
+            for (let j = 0; j < b.length; j++) {
+                let len = 0;
+                while (i + len < a.length && j + len < b.length && a[i+len] === b[j+len]) len++;
+                if (len > maxLen) maxLen = len;
+            }
+        }
+        return maxLen;
+    }
+    function findMatchingTopicByTitle(userEmail, newTitle) {
+        const userTopics = allTopics.filter(t => t.userEmail === userEmail);
+        for (let topic of userTopics) {
+            if (topic.topicTitle.toLowerCase() === newTitle.toLowerCase()) return topic;
+            if (longestCommonSubstringLen(topic.topicTitle.toLowerCase(), newTitle.toLowerCase()) >= 4) return topic;
+        }
+        return null;
+    }
+
+    function getSelectedDepartment() {
+        const deptSelect = document.getElementById("empDept");
+        const isOther = deptSelect.value === "Other";
+        if (isOther) {
+            const otherVal = document.getElementById("otherDeptInput").value.trim();
+            return otherVal ? otherVal : "Other (unspecified)";
+        }
+        return deptSelect.value;
+    }
+    document.getElementById("empDept")?.addEventListener("change", (e) => {
+        const otherDiv = document.getElementById("otherDeptContainer");
+        if (e.target.value === "Other") otherDiv.classList.remove("hidden");
+        else otherDiv.classList.add("hidden");
     });
-  </script>
+
+    async function handleSubmit() {
+        const name = document.getElementById("empName").value.trim();
+        const email = document.getElementById("empEmail").value.trim();
+        const location = document.getElementById("empLocation").value;
+        const department = getSelectedDepartment();
+        const category = document.getElementById("feedbackCategory").value;
+        const topicTitle = document.getElementById("topicTitle").value.trim();
+        const desc = document.getElementById("feedbackDesc").value.trim();
+        if (!name || !email || !desc || !topicTitle) { alert("Please fill all required fields (*)"); return; }
+        const userDetails = { name, email, location, department };
+        const existingMatch = findMatchingTopicByTitle(email, topicTitle);
+        if (existingMatch) {
+            const userWantsAdd = await customConfirm(`We found an existing topic:\n📌 "${existingMatch.topicTitle}"\n🔖 ${existingMatch.ref}\n\nDo you want to add this feedback as a new item to that topic?`);
+            if (userWantsAdd) {
+                const result = addItemToTopic(existingMatch.ref, desc, email);
+                if (result.success) {
+                    try { await saveData(true); } catch {}
+                    await sendNotifications(result.topic, desc, false);
+                    alert(`✅ Item added to existing topic: ${existingMatch.ref}\nNotification Sent.`);
+                    document.getElementById("feedbackDesc").value = "";
+                    document.getElementById("topicTitle").value = "";
+                    if(currentUserEmail === email) renderUserTopicsByEmail(email, currentUserStatusFilter);
+                    if(managerLoggedIn) renderManagerDashboardEnhanced();
+                    return;
+                } else { alert(result.msg); return; }
+            }
+        }
+        const newTopic = createNewTopic(userDetails, category, topicTitle, desc);
+        try { await saveData(true); } catch {}
+        await sendNotifications(newTopic, desc, true);
+        alert(`✅ Feedback submitted! Reference: ${newTopic.ref}\nNotification Sent.`);
+        document.getElementById("feedbackDesc").value = "";
+        document.getElementById("topicTitle").value = "";
+        if(currentUserEmail === email) renderUserTopicsByEmail(email, currentUserStatusFilter);
+        if(managerLoggedIn) renderManagerDashboardEnhanced();
+    }
+
+    async function requestVerificationCode(email) {
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        verificationCode = code; verificationExpiry = Date.now() + 15 * 60 * 1000;
+        const sent = await sendVerificationCode(email, code);
+        if (sent) { alert(`Verification code sent to ${email}. Check inbox/spam.`); return true; }
+        else { alert("Failed to send code."); return false; }
+    }
+    function verifyCode(enteredCode) { return verificationCode && verificationExpiry && Date.now() < verificationExpiry && enteredCode === verificationCode; }
+    function showVerificationModal(email) {
+        return new Promise((resolve) => {
+            const modalDiv = document.createElement("div");
+            modalDiv.className = "verify-modal";
+            modalDiv.innerHTML = `<div class="verify-card"><h3>🔐 Verify Your Email</h3><p>A code was sent to <strong>${escapeHtml(email)}</strong></p><input type="text" id="verifyCodeInput" placeholder="6‑digit code" style="width:100%; margin-bottom:15px;"><button id="verifySubmitBtn">Verify</button><button id="verifyCancelBtn" class="outline">Cancel</button></div>`;
+            document.body.appendChild(modalDiv);
+            modalDiv.querySelector("#verifySubmitBtn").onclick = () => {
+                if (verifyCode(modalDiv.querySelector("#verifyCodeInput").value.trim())) {
+                    localStorage.setItem("verifiedEmail", email);
+                    localStorage.setItem("verifiedTimestamp", Date.now().toString());
+                    currentUserEmail = email;
+                    modalDiv.remove();
+                    resolve(true);
+                } else { alert("Invalid/expired code."); modalDiv.remove(); resolve(false); }
+            };
+            modalDiv.querySelector("#verifyCancelBtn").onclick = () => { modalDiv.remove(); resolve(false); };
+        });
+    }
+    async function ensureVerified(email) {
+        const storedEmail = localStorage.getItem("verifiedEmail");
+        const storedTime = parseInt(localStorage.getItem("verifiedTimestamp") || "0");
+        if (storedEmail === email && (Date.now() - storedTime) < 24 * 60 * 60 * 1000) { currentUserEmail = email; return true; }
+        if (!await requestVerificationCode(email)) return false;
+        return await showVerificationModal(email);
+    }
+
+    function getAdminPassword() { let stored = localStorage.getItem("admin_password"); if(!stored) { localStorage.setItem("admin_password", DEFAULT_ADMIN_PASSWORD); return DEFAULT_ADMIN_PASSWORD; } return stored; }
+    async function setAdminPassword(newPass) { localStorage.setItem("admin_password", newPass); try { await saveData(true); } catch {} }
+    function showAdminLogin() {
+        return new Promise((resolve) => {
+            const modalDiv = document.createElement("div");
+            modalDiv.className = "admin-login-modal";
+            modalDiv.innerHTML = `<div class="admin-login-card"><h3>🔐 Admin Access</h3><input type="email" id="adminEmailInput" placeholder="Email" style="width:100%; margin:10px 0;" value="${ADMIN_EMAIL}"><input type="password" id="adminPasswordInput" placeholder="Password" style="width:100%; margin:10px 0;"><button id="adminLoginConfirm">Login</button><button id="adminLoginCancel" class="outline">Cancel</button></div>`;
+            document.body.appendChild(modalDiv);
+            modalDiv.querySelector("#adminLoginConfirm").onclick = () => { if(modalDiv.querySelector("#adminEmailInput").value.trim() === ADMIN_EMAIL && modalDiv.querySelector("#adminPasswordInput").value === getAdminPassword()) { modalDiv.remove(); resolve(true); } else { alert("Invalid credentials."); modalDiv.remove(); resolve(false); } };
+            modalDiv.querySelector("#adminLoginCancel").onclick = () => { modalDiv.remove(); resolve(false); };
+        });
+    }
+
+    function formatDateTime(iso) { const d = new Date(iso); return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
+
+    function renderUserTopicsByEmail(email, statusFilter = "all", searchTerm = "") {
+        currentUserEmail = email; currentUserStatusFilter = statusFilter; currentSearchTerm = searchTerm;
+        const container = document.getElementById("myTopicsContainer");
+        if(!email) { container.innerHTML = `<div class="alert">📭 Please verify email.</div>`; return; }
+        let userTopics = allTopics.filter(t => t.userEmail === email);
+        if(userTopics.length === 0) { container.innerHTML = `<div class="alert">📭 No topics found for ${escapeHtml(email)}.</div>`; return; }
+        userTopics.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+        if (searchTerm.trim()) { const term = searchTerm.toLowerCase(); userTopics = userTopics.filter(t => t.topicTitle.toLowerCase().includes(term) || t.ref.toLowerCase().includes(term)); }
+        let html = "";
+        for(let topic of userTopics) {
+            let allItems = topic.issues;
+            let pendingItems = topic.issues.filter(i => !i.acknowledged);
+            let resolvedItems = topic.issues.filter(i => i.acknowledged);
+            let itemsToShow = [];
+            if (statusFilter === "all") itemsToShow = allItems;
+            else if (statusFilter === "pending") itemsToShow = pendingItems;
+            else itemsToShow = resolvedItems;
+            if (itemsToShow.length === 0) continue;
+            const mailtoLink = `mailto:?subject=Feedback Summary: ${topic.ref}&body=Your feedback reference: ${topic.ref}.`;
+            html += `<div class="topic-item"><div class="flex-between"><span class="ref-badge">🔖 ${topic.ref}</span><span>📁 ${topic.category} <a href="${mailtoLink}" class="email-btn" title="Email summary">📧</a></span></div>
+            <div><strong>📌 Topic: ${escapeHtml(topic.topicTitle)}</strong></div><div>👤 ${topic.userName} · ${topic.userLocation} · ${escapeHtml(topic.userDepartment)}</div>
+            <div><small>Created: ${formatDateTime(topic.createdAt)}</small></div><div><strong>${statusFilter === "all" ? "Followup List" : (statusFilter === "pending" ? "Pending Acknowledgment" : "Acknowledged")}:</strong></div>`;
+            itemsToShow.forEach((item, idx) => {
+                const statusClass = item.acknowledged ? 'status-ack' : 'status-pending';
+                const statusText = item.acknowledged ? 'Acknowledged' : 'Pending Acknowledgment';
+                html += `<div style="background:#fafeff; border-radius: 20px; padding: 12px; margin-top: 8px;"><div class="flex-between"><span>${idx+1} · ${formatDateTime(item.date)}</span><span class="${statusClass}">${statusText}</span></div>
+                <p style="margin-top:6px;">📝 ${escapeHtml(item.description)}</p>
+                ${item.managerResponse ? `<div class="manager-response"><strong>📌 Leadership response:</strong> ${escapeHtml(item.managerResponse)}</div>` : ''}
+                </div>`;
+            });
+            html += `<button class="secondary addItemSmall" data-ref="${topic.ref}" style="margin-top:12px;">➕ Add follow-up</button></div>`;
+        }
+        if(html === "") html = `<div class="alert">📭 No ${statusFilter === "all" ? "items" : statusFilter} found.</div>`;
+        container.innerHTML = html;
+        document.querySelectorAll('.addItemSmall').forEach(btn => { btn.removeEventListener('click', handleUserAddItem); btn.addEventListener('click', handleUserAddItem); });
+    }
+    async function handleUserAddItem(e){
+        const ref = e.target.getAttribute('data-ref');
+        const desc = prompt("Describe the follow-up / update:");
+        if (desc?.trim()) {
+            const topic = allTopics.find(t => t.ref === ref);
+            if(topic && topic.userEmail === currentUserEmail){
+                const res = addItemToTopic(ref, desc.trim(), topic.userEmail);
+                if(res.success){ try { await saveData(true); } catch {} await sendNotifications(res.topic, desc, false); renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, currentSearchTerm); if(managerLoggedIn) renderManagerDashboardEnhanced(); alert("Follow-up added. Notification sent."); }
+                else alert(res.msg);
+            } else alert("Topic not found.");
+        }
+    }
+
+    async function handleAcknowledgeClick(topicRef, itemIdx) {
+        const topic = allTopics.find(t => t.ref === topicRef);
+        if (!topic) return;
+        const item = topic.issues[itemIdx];
+        if (item.acknowledged) {
+            item.acknowledged = false;
+            item.managerResponse = "";
+            try { await saveData(true); } catch {}
+            renderManagerDashboardEnhanced();
+            return;
+        }
+        const wantResponse = await customConfirm("Do you want to add a leadership response?");
+        if (wantResponse) {
+            const containerDiv = document.getElementById(`item-container-${topicRef}-${itemIdx}`);
+            if (!containerDiv) return;
+            const existingEditor = containerDiv.querySelector('.inline-response-editor');
+            if (existingEditor) existingEditor.remove();
+            const editorDiv = document.createElement('div');
+            editorDiv.className = 'inline-response-editor';
+            editorDiv.innerHTML = `
+                <textarea id="resp-inline-${topicRef}-${itemIdx}" rows="3" placeholder="Write your leadership response here..."></textarea>
+                <div style="display: flex; gap: 10px;">
+                    <button class="primary save-response-btn" data-ref="${topicRef}" data-idx="${itemIdx}">💾 Save</button>
+                    <button class="outline cancel-response-btn">Cancel</button>
+                </div>
+            `;
+            containerDiv.appendChild(editorDiv);
+            editorDiv.querySelector('.save-response-btn').addEventListener('click', async () => {
+                const response = editorDiv.querySelector(`#resp-inline-${topicRef}-${itemIdx}`).value.trim();
+                item.managerResponse = response;
+                item.acknowledged = true;
+                try { await saveData(true); } catch {}
+                renderManagerDashboardEnhanced();
+            });
+            editorDiv.querySelector('.cancel-response-btn').addEventListener('click', () => {
+                editorDiv.remove();
+                renderManagerDashboardEnhanced();
+            });
+        } else {
+            item.acknowledged = true;
+            try { await saveData(true); } catch {}
+            renderManagerDashboardEnhanced();
+        }
+    }
+    async function handleEditResponse(topicRef, itemIdx) {
+        const topic = allTopics.find(t => t.ref === topicRef);
+        if (!topic) return;
+        const item = topic.issues[itemIdx];
+        const currentResponse = item.managerResponse || "";
+        if (!currentResponse) {
+            const addNow = await customConfirm("There is no response yet. Do you want to add one?");
+            if (!addNow) return;
+        }
+        const containerDiv = document.getElementById(`item-container-${topicRef}-${itemIdx}`);
+        if (!containerDiv) return;
+        const existingEditor = containerDiv.querySelector('.inline-response-editor');
+        if (existingEditor) existingEditor.remove();
+        const editorDiv = document.createElement('div');
+        editorDiv.className = 'inline-response-editor';
+        editorDiv.innerHTML = `
+            <textarea id="resp-edit-${topicRef}-${itemIdx}" rows="3" placeholder="Edit response...">${escapeHtml(currentResponse)}</textarea>
+            <div style="display: flex; gap: 10px;">
+                <button class="primary save-edit-response" data-ref="${topicRef}" data-idx="${itemIdx}">💾 Save</button>
+                <button class="outline cancel-edit-response">Cancel</button>
+            </div>
+        `;
+        containerDiv.appendChild(editorDiv);
+        editorDiv.querySelector('.save-edit-response').addEventListener('click', async () => {
+            const newResponse = editorDiv.querySelector(`#resp-edit-${topicRef}-${itemIdx}`).value.trim();
+            item.managerResponse = newResponse;
+            try { await saveData(true); } catch {}
+            renderManagerDashboardEnhanced();
+        });
+        editorDiv.querySelector('.cancel-edit-response').addEventListener('click', () => { editorDiv.remove(); });
+    }
+
+    function getStats() {
+        let totalTopics = allTopics.length, totalItems = 0, pendingItems = 0, acknowledgedItems = 0;
+        for(let topic of allTopics){ totalItems += topic.issues.length; for(let item of topic.issues){ if(item.acknowledged) acknowledgedItems++; else pendingItems++; } }
+        return { totalTopics, totalItems, pendingItems, acknowledgedItems };
+    }
+
+    function renderManagerDashboardEnhanced() {
+        if(!managerLoggedIn) return;
+        const stats = getStats();
+        document.getElementById("statsGrid").innerHTML = `
+            <div class="stat-card"><div class="stat-number">${stats.totalTopics}</div><div class="stat-label">Total Topics</div></div>
+            <div class="stat-card"><div class="stat-number">${stats.totalItems}</div><div class="stat-label">Total Items</div></div>
+            <div class="stat-card"><div class="stat-number" style="color:#c96f0e;">${stats.pendingItems}</div><div class="stat-label">Pending Acknowledgment</div></div>
+            <div class="stat-card"><div class="stat-number" style="color:#2c7a4d;">${stats.acknowledgedItems}</div><div class="stat-label">Acknowledged</div></div>
+        `;
+        let filteredTopics = [...allTopics];
+        if(currentManagerFilter === "pending") filteredTopics = allTopics.filter(t => t.issues.some(i => !i.acknowledged));
+        else if(currentManagerFilter === "resolved") filteredTopics = allTopics.filter(t => t.issues.every(i => i.acknowledged));
+        let html = "";
+        for(let topic of filteredTopics){
+            html += `<div class="topic-item"><div class="flex-between"><span class="ref-badge">${topic.ref}</span><span>🏷️ ${topic.category}</span></div>
+            <div><strong>📌 Topic: ${escapeHtml(topic.topicTitle)}</strong></div><div>👤 ${escapeHtml(topic.userName)} · ${topic.userEmail} · ${escapeHtml(topic.userDepartment)}</div>`;
+            for(let idx=0; idx<topic.issues.length; idx++){
+                const item = topic.issues[idx];
+                const statusText = item.acknowledged ? 'Acknowledged' : 'Pending Acknowledgment';
+                const statusClass = item.acknowledged ? 'status-ack' : 'status-pending';
+                html += `<div id="item-container-${topic.ref}-${idx}" style="margin-top:12px; background:#ffffff; border-left: 3px solid ${item.acknowledged ? '#2c7a4d' : '#e68a2e'}; padding: 12px; border-radius: 20px;">
+                    <div class="flex-between">
+                        <span><strong>${idx+1}</strong> · ${formatDateTime(item.date)}</span>
+                        <span class="${statusClass}">${statusText}</span>
+                    </div>
+                    <p style="margin-top:8px;">📝 ${escapeHtml(item.description)}</p>`;
+                if (item.managerResponse) {
+                    html += `<div class="manager-response"><strong>📌 Leadership response:</strong> ${escapeHtml(item.managerResponse)}</div>`;
+                }
+                html += `<div class="flex-between" style="margin-top: 12px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="checkbox" class="ack-checkbox" data-ref="${topic.ref}" data-idx="${idx}" ${item.acknowledged ? 'checked' : ''}> 
+                                <span>Acknowledge</span>
+                            </label>`;
+                if (item.acknowledged) {
+                    html += `<button class="edit-response-btn" data-ref="${topic.ref}" data-idx="${idx}">✏️ Edit Response</button>`;
+                }
+                html += `</div></div>`;
+            }
+            html += `</div>`;
+        }
+        if(filteredTopics.length===0) html = `<div class="alert">✨ No topics match the selected filter.</div>`;
+        document.getElementById("managerTopicsList").innerHTML = html;
+        attachManagerEvents();
+    }
+
+    function attachManagerEvents() {
+        document.querySelectorAll('.ack-checkbox').forEach(chk => {
+            chk.removeEventListener('change', checkboxChangeHandler);
+            chk.addEventListener('change', checkboxChangeHandler);
+        });
+        document.querySelectorAll('.edit-response-btn').forEach(btn => {
+            btn.removeEventListener('click', editResponseHandler);
+            btn.addEventListener('click', editResponseHandler);
+        });
+    }
+
+    async function checkboxChangeHandler(e) {
+        const chk = e.target;
+        const ref = chk.getAttribute('data-ref');
+        const idx = parseInt(chk.getAttribute('data-idx'));
+        const topic = allTopics.find(t => t.ref === ref);
+        if (!topic) return;
+        const wasAcknowledged = topic.issues[idx].acknowledged;
+        if (chk.checked && !wasAcknowledged) {
+            chk.checked = false;
+            await handleAcknowledgeClick(ref, idx);
+        } else if (!chk.checked && wasAcknowledged) {
+            topic.issues[idx].acknowledged = false;
+            topic.issues[idx].managerResponse = "";
+            try { await saveData(true); } catch {}
+            renderManagerDashboardEnhanced();
+        } else {
+            chk.checked = wasAcknowledged;
+        }
+    }
+
+    async function editResponseHandler(e) {
+        const ref = e.currentTarget.getAttribute('data-ref');
+        const idx = parseInt(e.currentTarget.getAttribute('data-idx'));
+        await handleEditResponse(ref, idx);
+    }
+
+    async function changeAdminPassword() {
+        const currentPwd = prompt("Enter current password:");
+        if(currentPwd !== getAdminPassword()) { alert("Incorrect."); return; }
+        const newPwd = prompt("New password (min 4 chars):");
+        if(newPwd && newPwd.length>=4) { await setAdminPassword(newPwd); alert("Password changed."); }
+        else alert("Invalid.");
+    }
+
+    function logout() {
+        activeRole = null; managerLoggedIn = false; currentUserEmail = "";
+        localStorage.removeItem("verifiedEmail"); localStorage.removeItem("verifiedTimestamp"); sessionStorage.removeItem("mgrLogged");
+        if(pollingInterval) clearInterval(pollingInterval);
+        document.getElementById("userSection").classList.add("hidden");
+        document.getElementById("managerDashboard").classList.add("hidden");
+        const oldWelcome = document.getElementById("roleSelection");
+        if (oldWelcome) oldWelcome.remove();
+        const tempDiv = document.createElement("div"); tempDiv.innerHTML = welcomeHTML;
+        const newWelcome = tempDiv.firstChild; newWelcome.id = "roleSelection";
+        document.getElementById("appContainer").insertBefore(newWelcome, document.getElementById("userSection"));
+        document.getElementById("startPortalBtn").addEventListener("click", startPortalFlow);
+        document.getElementById("logoutContainer").innerHTML = "";
+    }
+    function setupLogoutButton() { const container = document.getElementById("logoutContainer"); container.innerHTML = `<button id="globalLogoutBtn" class="outline logout-btn">🚪 Logout</button>`; document.getElementById("globalLogoutBtn").addEventListener("click", logout); }
+
+    async function startPortalFlow() {
+        const email = prompt("Enter your email address:");
+        if(!email) return;
+        await loadData(true);
+        if(email === ADMIN_EMAIL) {
+            const adminOk = await showAdminLogin();
+            if(adminOk) {
+                activeRole = "admin"; managerLoggedIn = true; sessionStorage.setItem("mgrLogged","true");
+                const welcomeDiv = document.getElementById("roleSelection"); if(welcomeDiv) welcomeDiv.remove();
+                document.getElementById("userSection").classList.add("hidden"); document.getElementById("managerDashboard").classList.remove("hidden");
+                setupLogoutButton(); lastDataChecksum = computeChecksum(); renderManagerDashboardEnhanced();
+                if(pollingInterval) clearInterval(pollingInterval); pollingInterval = setInterval(async ()=>{ if(managerLoggedIn){ await loadData(); if(computeChecksum() !== lastDataChecksum){ lastDataChecksum = computeChecksum(); renderManagerDashboardEnhanced(); } } }, 7000);
+            }
+        } else {
+            const verified = await ensureVerified(email);
+            if(verified) {
+                activeRole = "user"; managerLoggedIn = false;
+                const welcomeDiv = document.getElementById("roleSelection"); if(welcomeDiv) welcomeDiv.remove();
+                document.getElementById("userSection").classList.remove("hidden"); document.getElementById("managerDashboard").classList.add("hidden");
+                setupLogoutButton(); renderUserTopicsByEmail(currentUserEmail, "all", "");
+            } else alert("Verification failed.");
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+        await loadData(true);
+        document.getElementById("startPortalBtn").addEventListener("click", startPortalFlow);
+        document.getElementById("submitFeedbackBtn").addEventListener("click", handleSubmit);
+        document.getElementById("searchTopicsBtn").addEventListener("click", () => { if(currentUserEmail) { const term = document.getElementById("searchTopicsInput").value.trim(); renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, term); } else alert("Please verify email first."); });
+        document.getElementById("resetSearchBtn").addEventListener("click", () => { document.getElementById("searchTopicsInput").value = ""; if(currentUserEmail) renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, ""); });
+        document.getElementById("refreshManagerBtn").addEventListener("click", async () => { if(managerLoggedIn){ await loadData(true); renderManagerDashboardEnhanced(); } });
+        document.getElementById("changeAdminPasswordBtn").addEventListener("click", changeAdminPassword);
+        document.querySelectorAll(".user-status-btn").forEach(btn => { btn.addEventListener("click", () => { document.querySelectorAll(".user-status-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); if(currentUserEmail) renderUserTopicsByEmail(currentUserEmail, btn.getAttribute("data-ustatus"), currentSearchTerm); }); });
+        document.querySelectorAll(".filter-btn").forEach(btn => { btn.addEventListener("click", () => { document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); currentManagerFilter = btn.getAttribute("data-filter"); if(managerLoggedIn) renderManagerDashboardEnhanced(); }); });
+        const storedVerified = localStorage.getItem("verifiedEmail"); const storedTime = parseInt(localStorage.getItem("verifiedTimestamp") || "0");
+        if (storedVerified && (Date.now() - storedTime) < 24*60*60*1000 && storedVerified !== ADMIN_EMAIL) {
+            activeRole = "user"; managerLoggedIn = false; currentUserEmail = storedVerified;
+            const welcomeDiv = document.getElementById("roleSelection"); if (welcomeDiv) welcomeDiv.remove();
+            document.getElementById("userSection").classList.remove("hidden"); document.getElementById("managerDashboard").classList.add("hidden");
+            setupLogoutButton(); renderUserTopicsByEmail(currentUserEmail, "all", "");
+        } else {
+            document.getElementById("roleSelection").classList.remove("hidden"); document.getElementById("userSection").classList.add("hidden"); document.getElementById("managerDashboard").classList.add("hidden");
+        }
+        const deptSelect = document.getElementById("empDept");
+        if(deptSelect) deptSelect.dispatchEvent(new Event('change'));
+    });
+</script>
 </body>
 </html>
