@@ -1,5 +1,3 @@
-Here is an enhanced version of your Transition Feedback Portal with one-time GitHub token setup, cloud sync, and the requested login behavior.
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -209,7 +207,6 @@ Here is an enhanced version of your Transition Feedback Portal with one-time Git
     // Data load/save with cloud sync
     async function loadData(showLog = false) {
         if (!hasValidToken()) {
-            // fallback to local storage if no token
             const local = localStorage.getItem("feedback_topics_local");
             if (local) allTopics = JSON.parse(local);
             else allTopics = [];
@@ -229,7 +226,6 @@ Here is an enhanced version of your Transition Feedback Portal with one-time Git
         }
     }
     async function saveData(showLog = false) {
-        // Always save local backup
         localStorage.setItem("feedback_topics_local", JSON.stringify(allTopics));
         const adminPassword = localStorage.getItem("admin_password") || DEFAULT_ADMIN_PASSWORD;
         const envelope = { topics: allTopics, adminPassword };
@@ -243,7 +239,7 @@ Here is an enhanced version of your Transition Feedback Portal with one-time Git
         } catch(error) { addToLog(`❌ Cloud save failed: ${error.message}`, true); }
     }
     
-    // Helper functions (email, notifications, etc)
+    // Helper functions
     function addToLog(msg, isError = false) { const logDiv = document.getElementById("emailLog"); if(!logDiv) return; const entry = document.createElement("div"); entry.style.borderBottom = "1px solid #2c4a5e"; entry.style.padding = "5px 0"; entry.style.color = isError ? "#ffb4a2" : "#bbdef5"; entry.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${escapeHtml(msg)}`; logDiv.prepend(entry); }
     function escapeHtml(str) { if(!str) return ""; return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; return '&gt;';}); }
     async function sendPortalEmail(subject, body, userEmail, userName) { if (!WEB3FORMS_ACCESS_KEY) return false; const fd = new FormData(); fd.append("access_key", WEB3FORMS_ACCESS_KEY); fd.append("subject", subject); fd.append("from_name", userName); fd.append("from_email", userEmail); fd.append("message", body); fd.append("replyto", userEmail); try { const res = await fetch("https://api.web3forms.com/submit", { method: "POST", body: fd }); const json = await res.json(); if(json.success) { addToLog(`📨 Portal notification sent (${subject})`); return true; } else { addToLog(`❌ Email fail: ${json.message}`, true); return false; } } catch(e) { addToLog(`❌ Email error: ${e.message}`, true); return false; } }
@@ -265,9 +261,9 @@ Here is an enhanced version of your Transition Feedback Portal with one-time Git
     async function setAdminPassword(newPass) { localStorage.setItem("admin_password", newPass); await saveData(true); }
     function showAdminLogin() { return new Promise((resolve) => { const modalDiv = document.createElement("div"); modalDiv.className = "admin-login-modal"; modalDiv.innerHTML = `<div class="admin-login-card"><h3>🔐 Admin Access</h3><input type="email" id="adminEmailInput" placeholder="Email" style="width:100%; margin:10px 0;" value="${ADMIN_EMAIL}"><input type="password" id="adminPasswordInput" placeholder="Password" style="width:100%; margin:10px 0;"><button id="adminLoginConfirm">Login</button><button id="adminLoginCancel" class="outline">Cancel</button></div>`; document.body.appendChild(modalDiv); modalDiv.querySelector("#adminLoginConfirm").onclick = () => { if(modalDiv.querySelector("#adminEmailInput").value.trim() === ADMIN_EMAIL && modalDiv.querySelector("#adminPasswordInput").value === getAdminPassword()) { modalDiv.remove(); resolve(true); } else { alert("Invalid credentials."); modalDiv.remove(); resolve(false); } }; modalDiv.querySelector("#adminLoginCancel").onclick = () => { modalDiv.remove(); resolve(false); }; }); }
     
-    // Rendering functions (user + manager) - same as original but using async saveData
+    // Rendering functions (simplified but complete)
     function formatDateTime(iso) { const d = new Date(iso); return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
-    function renderUserTopicsByEmail(email, statusFilter = "all", searchTerm = "") { /* identical logic, omitted for brevity but fully functional */ 
+    function renderUserTopicsByEmail(email, statusFilter = "all", searchTerm = "") {
         currentUserEmail = email; currentUserStatusFilter = statusFilter; currentSearchTerm = searchTerm;
         const container = document.getElementById("myTopicsContainer");
         if(!email) { container.innerHTML = `<div class="alert">📭 Please verify email.</div>`; return; }
@@ -316,4 +312,3 @@ Here is an enhanced version of your Transition Feedback Portal with one-time Git
 </script>
 </body>
 </html>
-```
