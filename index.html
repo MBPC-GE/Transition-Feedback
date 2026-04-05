@@ -279,7 +279,7 @@
 
     async function pushGistJson(payload) {
         if (!GITHUB_TOKEN || GITHUB_TOKEN === "PASTE_YOUR_NEW_GITHUB_TOKEN_HERE") {
-            throw new Error("Add your new GitHub token in GITHUB_TOKEN first.");
+            throw new Error("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");
         }
         const response = await fetch(`https://api.github.com/gists/${GITHUB_GIST_ID}`, {
             method: "PATCH",
