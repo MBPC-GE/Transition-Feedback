@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Transition Feedback Portal | Secure</title>
+    <title>Transition Feedback Portal | Secure Sync</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; }
         body { background: #f0f4f9; padding: 24px 20px; }
@@ -62,20 +62,17 @@
             overflow: hidden;
         }
         .welcome-hero::before { content: ""; position: absolute; top: -30%; right: -20%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(44,125,160,0.1) 0%, rgba(44,125,160,0) 70%); border-radius: 50%; z-index: 0; }
-        .welcome-hero::after { content: ""; position: absolute; bottom: -20%; left: -10%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(30,95,122,0.08) 0%, rgba(30,95,122,0) 70%); border-radius: 50%; z-index: 0; }
-        .welcome-card { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-radius: 64px; padding: 3rem 2.5rem; max-width: 500px; width: 100%; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.3); z-index: 1; transition: transform 0.3s ease; }
-        .welcome-card:hover { transform: scale(1.02); }
-        .welcome-icon { font-size: 4.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #1e5f7a, #2c7da0); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .welcome-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, #0f2b3d, #1e5f7a); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .welcome-desc { color: #2c3e50; margin-bottom: 2rem; font-size: 1rem; line-height: 1.5; }
-        .start-btn { background: linear-gradient(135deg, #1e5f7a, #2c7da0); color: white; border: none; padding: 14px 42px; font-size: 1.2rem; font-weight: 600; border-radius: 60px; cursor: pointer; transition: all 0.2s; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .start-btn:hover { transform: translateY(-3px); background: #0f4b63; }
-        @media (max-width: 640px) { .welcome-card { padding: 2rem 1.5rem; } .welcome-title { font-size: 1.8rem; } }
-        .dept-other-input { margin-top: 8px; }
-        .inline-response-editor { margin-top: 12px; background: #f9fbfd; border-radius: 20px; padding: 12px; border: 1px solid #dce5ec; }
-        .inline-response-editor textarea { width: 100%; margin-bottom: 10px; }
-        .edit-response-btn { background: #2c7da0; color: white; border: none; padding: 6px 16px; border-radius: 40px; font-size: 0.75rem; cursor: pointer; margin-left: 12px; }
-        .ack-checkbox { margin-right: 6px; cursor: pointer; }
+        .welcome-card { background: rgba(255,255,255,0.94); backdrop-filter: blur(12px); border-radius: 64px; padding: 2rem 2rem; max-width: 520px; width: 100%; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.3); z-index: 1; transition: transform 0.3s ease; }
+        .welcome-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+        .welcome-title { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #0f2b3d, #1e5f7a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .token-input-group { margin: 1.2rem 0; text-align: left; }
+        .token-input-group label { font-weight: 600; display: block; margin-bottom: 6px; }
+        .token-input-group input { width: 100%; }
+        .status-badge { font-size: 0.75rem; background: #e9f0f5; border-radius: 40px; padding: 5px 12px; display: inline-block; margin-top: 8px; }
+        .danger-btn { background: #b91c1c; }
+        .danger-btn:hover { background: #991b1b; }
+        .start-btn { background: linear-gradient(135deg, #1e5f7a, #2c7da0); color: white; border: none; padding: 12px 28px; font-size: 1rem; font-weight: 600; border-radius: 60px; cursor: pointer; margin-top: 12px; }
+        .small-btn { padding: 6px 16px; font-size: 0.75rem; }
     </style>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script>
@@ -92,106 +89,78 @@
         <div id="logoutContainer"></div>
     </div>
 
+    <!-- WELCOME SCREEN WITH TOKEN CONFIGURATION -->
     <div id="roleSelection" class="welcome-hero">
         <div class="welcome-card">
-            <div class="welcome-icon">✨</div>
+            <div class="welcome-icon">🔐✨</div>
             <h2 class="welcome-title">Transition Hub</h2>
-            <p class="welcome-desc">Submit feedback, track acknowledgments, and collaborate with leadership.</p>
-            <button id="startPortalBtn" class="start-btn">🚀 Start</button>
-            <p style="font-size: 0.7rem; margin-top: 1.8rem; color: #6c7e8f;">🔒 Secure portal · real-time updates</p>
+            <p class="welcome-desc">Secure feedback portal with GitHub sync. Paste your token once.</p>
+            <div id="tokenConfigArea">
+                <div class="token-input-group">
+                    <label>🔑 GitHub Personal Access Token (needs 'gist' scope)</label>
+                    <input type="password" id="githubTokenInput" placeholder="ghp_... or github_pat_..." autocomplete="off">
+                </div>
+                <div class="token-input-group">
+                    <label>📁 Gist ID (optional)</label>
+                    <input type="text" id="gistIdInput" placeholder="e6eb383ed3bbd47122aa0e6f05f30604">
+                </div>
+                <div id="tokenStatusMsg" class="status-badge">⚙️ No token configured</div>
+                <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+                    <button id="saveTokenBtn" class="primary">💾 Save Token & Start</button>
+                    <button id="reconfigureTokenBtn" class="outline hidden">🔄 Reconfigure</button>
+                </div>
+            </div>
+            <div id="quickStartArea" class="hidden">
+                <div id="tokenOkMsg" class="status-badge" style="background:#dcfce7; color:#166534;">✅ GitHub sync ready</div>
+                <button id="proceedToPortalBtn" class="start-btn" style="margin-top: 18px;">🚀 Enter Portal →</button>
+                <button id="changeTokenBtn" class="outline small-btn" style="margin-top: 12px;">🔑 Change Token</button>
+            </div>
+            <p style="font-size: 0.65rem; margin-top: 1.5rem; color: #5f7d95;">Token stored locally (only on your device). Required for cloud sync.</p>
         </div>
     </div>
 
+    <!-- USER SECTION -->
     <div id="userSection" class="hidden">
         <div class="card">
             <h2>✍️ Submit feedback</h2>
             <div class="form-row">
                 <div class="form-group"><label>Full Name *</label><input type="text" id="empName" placeholder="e.g. Layla Hassan"></div>
                 <div class="form-group"><label>Email *</label><input type="email" id="empEmail" placeholder="employee@domain.com"></div>
-                <div class="form-group"><label>Location *</label>
-                    <select id="empLocation">
-                        <option value="Deira">Deira</option><option value="Sharjah">Sharjah</option><option value="RAK">RAK</option>
-                        <option value="Fujairah">Fujairah</option><option value="Brand Center">Brand Center</option>
-                        <option value="SZR">SZR</option><option value="JAFZA">JAFZA</option><option value="Al Quoz">Al Quoz</option>
-                    </select>
-                </div>
-                <div class="form-group"><label>Department *</label>
-                    <select id="empDept">
-                        <option value="Sales">Sales</option><option value="Aftersales">Aftersales</option>
-                        <option value="CVM">CVM</option><option value="Operations">Operations</option>
-                        <option value="Finance">Finance</option><option value="IT">IT</option>
-                        <option value="HR">HR</option><option value="Other">Other</option>
-                    </select>
-                    <div id="otherDeptContainer" class="dept-other-input hidden"><input type="text" id="otherDeptInput" placeholder="Please specify department" style="width:100%;"></div>
-                </div>
+                <div class="form-group"><label>Location *</label><select id="empLocation"><option value="Deira">Deira</option><option value="Sharjah">Sharjah</option><option value="RAK">RAK</option><option value="Fujairah">Fujairah</option><option value="Brand Center">Brand Center</option><option value="SZR">SZR</option><option value="JAFZA">JAFZA</option><option value="Al Quoz">Al Quoz</option></select></div>
+                <div class="form-group"><label>Department *</label><select id="empDept"><option value="Sales">Sales</option><option value="Aftersales">Aftersales</option><option value="CVM">CVM</option><option value="Operations">Operations</option><option value="Finance">Finance</option><option value="IT">IT</option><option value="HR">HR</option><option value="Other">Other</option></select>
+                <div id="otherDeptContainer" class="dept-other-input hidden"><input type="text" id="otherDeptInput" placeholder="Please specify department" style="width:100%;"></div></div>
             </div>
             <div class="form-row">
-                <div class="form-group"><label>Category *</label>
-                    <select id="feedbackCategory">
-                        <option value="Clarification">Clarification — e.g. Require updates</option>
-                        <option value="Risk / Escalation">Risk / Escalation — e.g. report Miscommunication</option>
-                        <option value="Operations">Operations — e.g. Process/System Related</option>
-                        <option value="General Feedback">General Feedback — e.g. Ideas</option>
-                    </select>
-                </div>
+                <div class="form-group"><label>Category *</label><select id="feedbackCategory"><option value="Clarification">Clarification — e.g. Require updates</option><option value="Risk / Escalation">Risk / Escalation</option><option value="Operations">Operations — Process/System</option><option value="General Feedback">General Feedback — Ideas</option></select></div>
                 <div class="form-group full-width" style="flex:2"><label>Topic / Subject *</label><input type="text" id="topicTitle" placeholder="e.g., ERP migration delays"></div>
             </div>
-            <div class="form-row">
-                <div class="form-group full-width"><label>Description / Feedback *</label><textarea id="feedbackDesc" rows="3" placeholder="Provide detailed feedback..."></textarea></div>
-            </div>
+            <div class="form-row"><div class="form-group full-width"><label>Description / Feedback *</label><textarea id="feedbackDesc" rows="3" placeholder="Provide detailed feedback..."></textarea></div></div>
             <button id="submitFeedbackBtn" class="primary">📨 Submit feedback →</button>
             <div id="userMessageArea" class="alert hidden"></div>
         </div>
-
-        <div class="card">
-            <div class="flex-between"><h2>🔍 My Feedback</h2></div>
-            <div class="search-box">
-                <input type="text" id="searchTopicsInput" placeholder="Search by topic title or reference...">
-                <button id="searchTopicsBtn" class="secondary">🔎 Filter</button>
-                <button id="resetSearchBtn" class="outline">Reset</button>
-            </div>
-            <div id="userStatusTabs" class="user-status-tabs">
-                <div class="user-status-btn active" data-ustatus="all">📋 All Topics</div>
-                <div class="user-status-btn" data-ustatus="pending">⏳ Pending Acknowledgment</div>
-                <div class="user-status-btn" data-ustatus="resolved">✅ Acknowledged</div>
-            </div>
-            <div id="myTopicsContainer"></div>
-        </div>
-
-        <div class="card">
-            <h2>📧 Notification Log</h2>
-            <div id="emailLog" class="email-log">✨ System ready. Portal notifications will appear here.</div>
-            <p style="font-size:0.7rem; margin-top:8px;">✅ Notifications are sent via portal & email verification.</p>
-        </div>
+        <div class="card"><div class="flex-between"><h2>🔍 My Feedback</h2></div>
+        <div class="search-box"><input type="text" id="searchTopicsInput" placeholder="Search by topic title or reference..."><button id="searchTopicsBtn" class="secondary">🔎 Filter</button><button id="resetSearchBtn" class="outline">Reset</button></div>
+        <div class="user-status-tabs"><div class="user-status-btn active" data-ustatus="all">📋 All Topics</div><div class="user-status-btn" data-ustatus="pending">⏳ Pending Acknowledgment</div><div class="user-status-btn" data-ustatus="resolved">✅ Acknowledged</div></div>
+        <div id="myTopicsContainer"></div></div>
+        <div class="card"><h2>📧 Notification Log</h2><div id="emailLog" class="email-log">✨ System ready. Portal notifications appear here.</div><p style="font-size:0.7rem; margin-top:8px;">✅ Notifications via portal & email verification.</p></div>
     </div>
 
+    <!-- MANAGER DASHBOARD -->
     <div id="managerDashboard" class="card hidden">
-        <div class="flex-between">
-            <h2>📊 Admin Dashboard</h2>
-            <div><button id="changeAdminPasswordBtn" class="outline">🔑 Change Password</button><button id="refreshManagerBtn" class="outline" style="margin-left:10px;">⟳ Refresh</button></div>
-        </div>
+        <div class="flex-between"><h2>📊 Admin Dashboard</h2><div><button id="changeAdminPasswordBtn" class="outline">🔑 Change Password</button><button id="refreshManagerBtn" class="outline" style="margin-left:10px;">⟳ Refresh</button><button id="adminSyncSettingsBtn" class="outline" style="margin-left:10px;">⚙️ Sync Token</button></div></div>
         <div class="stats-grid" id="statsGrid"></div>
-        <div class="filter-tabs" id="filterTabs">
-            <div class="filter-btn active" data-filter="all">📋 All Topics</div>
-            <div class="filter-btn" data-filter="pending">⏳ Pending Acknowledgment</div>
-            <div class="filter-btn" data-filter="resolved">✅ Acknowledged</div>
-        </div>
+        <div class="filter-tabs" id="filterTabs"><div class="filter-btn active" data-filter="all">📋 All Topics</div><div class="filter-btn" data-filter="pending">⏳ Pending Acknowledgment</div><div class="filter-btn" data-filter="resolved">✅ Acknowledged</div></div>
         <div id="managerTopicsList" style="max-height: 65vh; overflow-y: auto; padding-right: 6px;"></div>
     </div>
 </div>
 
 <script>
-    // ---------- CONFIG ----------
+    // ---------- DYNAMIC GITHUB CONFIG ----------
+    const DEFAULT_GIST_ID = "e6eb383ed3bbd47122aa0e6f05f30604";
     const WEB3FORMS_ACCESS_KEY = "5866f22e-149f-4545-bb8e-84bd2a2d9e86";
     const ADMIN_EMAIL = "remaz.abdallah@gargash.ae";
     const DEFAULT_ADMIN_PASSWORD = "admin123";
-
-    // HTML-only GitHub sync (insecure because token is in source)
-    const GITHUB_TOKEN = "PASTE_YOUR_NEW_GITHUB_TOKEN_HERE";
-    const GITHUB_GIST_ID = "e6eb383ed3bbd47122aa0e6f05f30604";
-    const GITHUB_FILENAME = "transition-feedback-data.json";
-    const LOCAL_FALLBACK_KEY = "feedback_topics_v13_backup";
-
+    
     let allTopics = [];
     let currentManagerFilter = "all";
     let managerLoggedIn = false;
@@ -202,591 +171,144 @@
     let currentSearchTerm = "";
     let activeRole = null;
     let verificationCode = null, verificationExpiry = null;
-    const welcomeHTML = document.getElementById("roleSelection").outerHTML;
 
-    function customConfirm(message) {
-        return new Promise((resolve) => {
-            const modalDiv = document.createElement("div");
-            modalDiv.className = "custom-confirm-modal";
-            modalDiv.innerHTML = `
-                <div class="confirm-card">
-                    <p style="margin-bottom: 20px; white-space: pre-line;">${escapeHtml(message)}</p>
-                    <button id="confirmYesBtn" class="primary" style="margin-right: 10px;">Yes</button>
-                    <button id="confirmNoBtn" class="outline">No</button>
-                </div>
-            `;
-            document.body.appendChild(modalDiv);
-            modalDiv.querySelector("#confirmYesBtn").onclick = () => { modalDiv.remove(); resolve(true); };
-            modalDiv.querySelector("#confirmNoBtn").onclick = () => { modalDiv.remove(); resolve(false); };
-        });
-    }
+    // Token & Gist helpers
+    function getGitHubToken() { return localStorage.getItem("github_token"); }
+    function getGistId() { return localStorage.getItem("gist_id") || DEFAULT_GIST_ID; }
+    function setGitHubConfig(token, gistId) { if(token) localStorage.setItem("github_token", token); if(gistId) localStorage.setItem("gist_id", gistId); }
+    function hasValidToken() { let t = getGitHubToken(); return t && t.length > 10; }
 
-    function computeChecksum() { return JSON.stringify(allTopics).length + "-" + allTopics.length; }
-    function escapeHtml(str){ if(!str) return ""; return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; return '&gt;';}); }
-    function addToLog(msg, isError = false) {
-        const logDiv = document.getElementById("emailLog");
-        if(!logDiv) return;
-        const entry = document.createElement("div");
-        entry.style.borderBottom = "1px solid #2c4a5e";
-        entry.style.padding = "5px 0";
-        entry.style.color = isError ? "#ffb4a2" : "#bbdef5";
-        entry.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${escapeHtml(msg)}`;
-        logDiv.prepend(entry);
-    }
-
-    function getStorageEnvelope() {
-        return {
-            adminPassword: localStorage.getItem("admin_password") || DEFAULT_ADMIN_PASSWORD,
-            verifiedEmail: localStorage.getItem("verifiedEmail") || "",
-            verifiedTimestamp: localStorage.getItem("verifiedTimestamp") || "",
-            topics: allTopics
-        };
-    }
-
-    function applyEnvelope(envelope) {
-        const safe = envelope && typeof envelope === 'object' ? envelope : {};
-        allTopics = Array.isArray(safe.topics) ? safe.topics : [];
-        if (safe.adminPassword) localStorage.setItem("admin_password", safe.adminPassword);
-        if (safe.verifiedEmail) localStorage.setItem("verifiedEmail", safe.verifiedEmail);
-        if (safe.verifiedTimestamp) localStorage.setItem("verifiedTimestamp", safe.verifiedTimestamp);
-        localStorage.setItem(LOCAL_FALLBACK_KEY, JSON.stringify(safe));
-    }
-
+    // GitHub Gist operations (dynamic)
     async function fetchGistJson() {
-        if (!GITHUB_TOKEN || GITHUB_TOKEN === "PASTE_YOUR_NEW_GITHUB_TOKEN_HERE") {
-            throw new Error("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");
-        }
-        const response = await fetch(`https://api.github.com/gists/${GITHUB_GIST_ID}`, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${GITHUB_TOKEN}`,
-                "Accept": "application/vnd.github+json",
-                "User-Agent": "transition-feedback-portal"
-            }
+        const token = getGitHubToken();
+        const gistId = getGistId();
+        if (!token) throw new Error("No GitHub token configured. Please set token first.");
+        const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+            headers: { "Authorization": `Bearer ${token}`, "Accept": "application/vnd.github+json", "User-Agent": "transition-feedback-portal" }
         });
         const result = await response.json();
-        if (!response.ok) throw new Error(result.message || "Failed to read GitHub Gist.");
-        const file = result.files?.[GITHUB_FILENAME];
+        if (!response.ok) throw new Error(result.message || "GitHub fetch failed (check token/gist)");
+        const file = result.files?.["transition-feedback-data.json"];
         if (!file?.content) return { topics: [], adminPassword: DEFAULT_ADMIN_PASSWORD };
-        try {
-            const parsed = JSON.parse(file.content);
-            if (!Array.isArray(parsed.topics)) parsed.topics = [];
-            return parsed;
-        } catch {
-            throw new Error("Gist JSON is invalid.");
-        }
+        const parsed = JSON.parse(file.content);
+        if (!Array.isArray(parsed.topics)) parsed.topics = [];
+        return parsed;
     }
-
     async function pushGistJson(payload) {
-        if (!GITHUB_TOKEN || GITHUB_TOKEN === "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") {
-            throw new Error("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");
-        }
-        const response = await fetch(`https://api.github.com/gists/${GITHUB_GIST_ID}`, {
+        const token = getGitHubToken();
+        const gistId = getGistId();
+        if (!token) throw new Error("No GitHub token");
+        const response = await fetch(`https://api.github.com/gists/${gistId}`, {
             method: "PATCH",
-            headers: {
-                "Authorization": `Bearer ${GITHUB_TOKEN}`,
-                "Accept": "application/vnd.github+json",
-                "Content-Type": "application/json",
-                "User-Agent": "transition-feedback-portal"
-            },
-            body: JSON.stringify({
-                files: {
-                    [GITHUB_FILENAME]: {
-                        content: JSON.stringify(payload, null, 2)
-                    }
-                }
-            })
+            headers: { "Authorization": `Bearer ${token}`, "Accept": "application/vnd.github+json", "Content-Type": "application/json", "User-Agent": "transition-feedback-portal" },
+            body: JSON.stringify({ files: { "transition-feedback-data.json": { content: JSON.stringify(payload, null, 2) } } })
         });
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.message || "Failed to update GitHub Gist.");
-        return result;
+        if (!response.ok) { const err = await response.json(); throw new Error(err.message || "GitHub update failed"); }
+        return await response.json();
     }
 
+    function getStorageEnvelope() { return { adminPassword: localStorage.getItem("admin_password") || DEFAULT_ADMIN_PASSWORD, verifiedEmail: localStorage.getItem("verifiedEmail") || "", verifiedTimestamp: localStorage.getItem("verifiedTimestamp") || "", topics: allTopics }; }
+    function applyEnvelope(envelope) { allTopics = Array.isArray(envelope.topics) ? envelope.topics : []; if(envelope.adminPassword) localStorage.setItem("admin_password", envelope.adminPassword); if(envelope.verifiedEmail) localStorage.setItem("verifiedEmail", envelope.verifiedEmail); if(envelope.verifiedTimestamp) localStorage.setItem("verifiedTimestamp", envelope.verifiedTimestamp); }
+    
     async function loadData(showLog = false) {
         try {
             const envelope = await fetchGistJson();
             applyEnvelope(envelope);
-            if (showLog) addToLog(`☁️ GitHub sync loaded (${allTopics.length} topics)`);
+            if (showLog) addToLog(`☁️ GitHub sync loaded (${allTopics.length} topics)`, false);
         } catch (error) {
-            const fallback = localStorage.getItem(LOCAL_FALLBACK_KEY);
-            if (fallback) {
-                try {
-                    applyEnvelope(JSON.parse(fallback));
-                    if (showLog) addToLog(`⚠️ GitHub load failed, local backup used: ${error.message}`, true);
-                    return;
-                } catch {}
-            }
+            const fallback = localStorage.getItem("feedback_topics_v13_backup");
+            if (fallback) { try { applyEnvelope(JSON.parse(fallback)); if(showLog) addToLog(`⚠️ Local fallback used: ${error.message}`, true); return; } catch(e) {} }
             allTopics = [];
-            if (showLog) addToLog(`❌ GitHub load failed: ${error.message}`, true);
-        }
-    }
-
-    async function saveData(showLog = false) {
-        const envelope = getStorageEnvelope();
-        localStorage.setItem(LOCAL_FALLBACK_KEY, JSON.stringify(envelope));
-        try {
-            await pushGistJson(envelope);
-            if (showLog) addToLog(`☁️ GitHub sync saved (${allTopics.length} topics)`);
-        } catch (error) {
-            if (showLog) addToLog(`❌ GitHub save failed: ${error.message}`, true);
+            if(showLog) addToLog(`❌ GitHub load failed: ${error.message}. Check token/gist.`, true);
             throw error;
         }
     }
-
-    async function sendPortalEmail(subject, body, userEmail, userName) {
-        if (!WEB3FORMS_ACCESS_KEY) { addToLog("⚠️ Web3Forms key missing", true); return false; }
-        const fd = new FormData();
-        fd.append("access_key", WEB3FORMS_ACCESS_KEY);
-        fd.append("subject", subject);
-        fd.append("from_name", userName);
-        fd.append("from_email", userEmail);
-        fd.append("message", body);
-        fd.append("replyto", userEmail);
+    async function saveData(showLog = false) {
+        const envelope = getStorageEnvelope();
+        localStorage.setItem("feedback_topics_v13_backup", JSON.stringify(envelope));
         try {
-            const res = await fetch("https://api.web3forms.com/submit", { method: "POST", body: fd });
-            const json = await res.json();
-            if(json.success) { addToLog(`📨 Portal notification sent (${subject})`); return true; }
-            else { addToLog(`❌ Portal email fail: ${json.message}`, true); return false; }
-        } catch(e) { addToLog(`❌ Portal error: ${e.message}`, true); return false; }
+            await pushGistJson(envelope);
+            if(showLog) addToLog(`☁️ GitHub sync saved (${allTopics.length} topics)`, false);
+        } catch(error) { addToLog(`❌ GitHub save failed: ${error.message}`, true); throw error; }
     }
 
-    async function sendVerificationCode(email, code) {
-        const templateParams = { to_email: email, verification_code: code, portal_name: "Transition Feedback Portal", current_year: new Date().getFullYear() };
-        try {
-            const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-            if (response.status === 200) { addToLog(`✉️ Verification code sent to ${email}`); return true; }
-            else { addToLog(`❌ EmailJS send failed`, true); return false; }
-        } catch(err) { addToLog(`❌ EmailJS error: ${err.message}`, true); return false; }
-    }
-
-    async function sendNotifications(topic, desc, isNewTopic) {
-        const ref = topic.ref;
-        const adminLink = `${window.location.origin}${window.location.pathname}?admin=1`;
-        const portalSubject = `Transition Feedback · ${isNewTopic ? 'New Topic' : 'New Item'} · ${ref}`;
-        const portalBody = `Ref: ${ref}\nTopic: ${topic.topicTitle}\nUser: ${topic.userName} (${topic.userEmail})\nCategory: ${topic.category}\nFeedback: ${desc}\nManage: ${adminLink}`;
-        await sendPortalEmail(portalSubject, portalBody, topic.userEmail, topic.userName);
-        addToLog(`📬 Portal notification sent for ${ref}`);
-    }
-
+    // Helper functions (email, notifications, etc)
+    function addToLog(msg, isError = false) { const logDiv = document.getElementById("emailLog"); if(!logDiv) return; const entry = document.createElement("div"); entry.style.borderBottom = "1px solid #2c4a5e"; entry.style.padding = "5px 0"; entry.style.color = isError ? "#ffb4a2" : "#bbdef5"; entry.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${escapeHtml(msg)}`; logDiv.prepend(entry); }
+    function escapeHtml(str) { if(!str) return ""; return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; return '&gt;';}); }
+    async function sendPortalEmail(subject, body, userEmail, userName) { if (!WEB3FORMS_ACCESS_KEY) return false; const fd = new FormData(); fd.append("access_key", WEB3FORMS_ACCESS_KEY); fd.append("subject", subject); fd.append("from_name", userName); fd.append("from_email", userEmail); fd.append("message", body); fd.append("replyto", userEmail); try { const res = await fetch("https://api.web3forms.com/submit", { method: "POST", body: fd }); const json = await res.json(); if(json.success) { addToLog(`📨 Portal notification sent (${subject})`); return true; } else { addToLog(`❌ Email fail: ${json.message}`, true); return false; } } catch(e) { addToLog(`❌ Email error: ${e.message}`, true); return false; } }
+    async function sendVerificationCode(email, code) { try { const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { to_email: email, verification_code: code, portal_name: "Transition Feedback Portal", current_year: new Date().getFullYear() }); return response.status === 200; } catch(err) { return false; } }
     function generateRef() { return "REF-" + Math.random().toString(36).substring(2, 8).toUpperCase(); }
-    function createNewTopic(user, category, topicTitle, desc) {
-        const ref = generateRef();
-        const newTopic = { ref, userName: user.name, userEmail: user.email, userLocation: user.location, userDepartment: user.department, category, topicTitle, createdAt: new Date().toISOString(), issues: [{ itemId: Date.now(), description: desc, date: new Date().toISOString(), acknowledged: false, managerResponse: "" }] };
-        allTopics.push(newTopic);
-        return newTopic;
-    }
-    function addItemToTopic(ref, itemDesc, userEmail) {
-        const topic = allTopics.find(t => t.ref === ref);
-        if (!topic) return { success: false, msg: "Ref not found" };
-        if (topic.userEmail !== userEmail) return { success: false, msg: "Email mismatch" };
-        topic.issues.push({ itemId: Date.now(), description: itemDesc, date: new Date().toISOString(), acknowledged: false, managerResponse: "" });
-        return { success: true, topic };
-    }
+    function createNewTopic(user, category, topicTitle, desc) { const ref = generateRef(); const newTopic = { ref, userName: user.name, userEmail: user.email, userLocation: user.location, userDepartment: user.department, category, topicTitle, createdAt: new Date().toISOString(), issues: [{ itemId: Date.now(), description: desc, date: new Date().toISOString(), acknowledged: false, managerResponse: "" }] }; allTopics.push(newTopic); return newTopic; }
+    function addItemToTopic(ref, itemDesc, userEmail) { const topic = allTopics.find(t => t.ref === ref); if (!topic || topic.userEmail !== userEmail) return { success: false }; topic.issues.push({ itemId: Date.now(), description: itemDesc, date: new Date().toISOString(), acknowledged: false, managerResponse: "" }); return { success: true, topic }; }
+    function findMatchingTopicByTitle(userEmail, newTitle) { return allTopics.filter(t => t.userEmail === userEmail).find(t => t.topicTitle.toLowerCase() === newTitle.toLowerCase()); }
+    function getSelectedDepartment() { const deptSelect = document.getElementById("empDept"); if(deptSelect.value === "Other") { const otherVal = document.getElementById("otherDeptInput").value.trim(); return otherVal ? otherVal : "Other (unspecified)"; } return deptSelect.value; }
+    async function sendNotifications(topic, desc, isNewTopic) { const adminLink = window.location.href; const portalSubject = `Transition Feedback · ${isNewTopic ? 'New Topic' : 'New Item'} · ${topic.ref}`; const portalBody = `Ref: ${topic.ref}\nTopic: ${topic.topicTitle}\nUser: ${topic.userName} (${topic.userEmail})\nFeedback: ${desc}\nManage: ${adminLink}`; await sendPortalEmail(portalSubject, portalBody, topic.userEmail, topic.userName); addToLog(`📬 Notification sent for ${topic.ref}`); }
 
-    function longestCommonSubstringLen(a, b) {
-        let maxLen = 0;
-        for (let i = 0; i < a.length; i++) {
-            for (let j = 0; j < b.length; j++) {
-                let len = 0;
-                while (i + len < a.length && j + len < b.length && a[i+len] === b[j+len]) len++;
-                if (len > maxLen) maxLen = len;
-            }
-        }
-        return maxLen;
-    }
-    function findMatchingTopicByTitle(userEmail, newTitle) {
-        const userTopics = allTopics.filter(t => t.userEmail === userEmail);
-        for (let topic of userTopics) {
-            if (topic.topicTitle.toLowerCase() === newTitle.toLowerCase()) return topic;
-            if (longestCommonSubstringLen(topic.topicTitle.toLowerCase(), newTitle.toLowerCase()) >= 4) return topic;
-        }
-        return null;
-    }
-
-    function getSelectedDepartment() {
-        const deptSelect = document.getElementById("empDept");
-        const isOther = deptSelect.value === "Other";
-        if (isOther) {
-            const otherVal = document.getElementById("otherDeptInput").value.trim();
-            return otherVal ? otherVal : "Other (unspecified)";
-        }
-        return deptSelect.value;
-    }
-    document.getElementById("empDept")?.addEventListener("change", (e) => {
-        const otherDiv = document.getElementById("otherDeptContainer");
-        if (e.target.value === "Other") otherDiv.classList.remove("hidden");
-        else otherDiv.classList.add("hidden");
-    });
-
-    async function handleSubmit() {
-        const name = document.getElementById("empName").value.trim();
-        const email = document.getElementById("empEmail").value.trim();
-        const location = document.getElementById("empLocation").value;
-        const department = getSelectedDepartment();
-        const category = document.getElementById("feedbackCategory").value;
-        const topicTitle = document.getElementById("topicTitle").value.trim();
-        const desc = document.getElementById("feedbackDesc").value.trim();
-        if (!name || !email || !desc || !topicTitle) { alert("Please fill all required fields (*)"); return; }
-        const userDetails = { name, email, location, department };
-        const existingMatch = findMatchingTopicByTitle(email, topicTitle);
-        if (existingMatch) {
-            const userWantsAdd = await customConfirm(`We found an existing topic:\n📌 "${existingMatch.topicTitle}"\n🔖 ${existingMatch.ref}\n\nDo you want to add this feedback as a new item to that topic?`);
-            if (userWantsAdd) {
-                const result = addItemToTopic(existingMatch.ref, desc, email);
-                if (result.success) {
-                    try { await saveData(true); } catch {}
-                    await sendNotifications(result.topic, desc, false);
-                    alert(`✅ Item added to existing topic: ${existingMatch.ref}\nNotification Sent.`);
-                    document.getElementById("feedbackDesc").value = "";
-                    document.getElementById("topicTitle").value = "";
-                    if(currentUserEmail === email) renderUserTopicsByEmail(email, currentUserStatusFilter);
-                    if(managerLoggedIn) renderManagerDashboardEnhanced();
-                    return;
-                } else { alert(result.msg); return; }
-            }
-        }
-        const newTopic = createNewTopic(userDetails, category, topicTitle, desc);
-        try { await saveData(true); } catch {}
-        await sendNotifications(newTopic, desc, true);
-        alert(`✅ Feedback submitted! Reference: ${newTopic.ref}\nNotification Sent.`);
-        document.getElementById("feedbackDesc").value = "";
-        document.getElementById("topicTitle").value = "";
-        if(currentUserEmail === email) renderUserTopicsByEmail(email, currentUserStatusFilter);
-        if(managerLoggedIn) renderManagerDashboardEnhanced();
-    }
-
-    async function requestVerificationCode(email) {
-        const code = Math.floor(100000 + Math.random() * 900000).toString();
-        verificationCode = code; verificationExpiry = Date.now() + 15 * 60 * 1000;
-        const sent = await sendVerificationCode(email, code);
-        if (sent) { alert(`Verification code sent to ${email}. Check inbox/spam.`); return true; }
-        else { alert("Failed to send code."); return false; }
-    }
+    // Verification & auth
+    async function requestVerificationCode(email) { const code = Math.floor(100000 + Math.random() * 900000).toString(); verificationCode = code; verificationExpiry = Date.now() + 15 * 60 * 1000; return await sendVerificationCode(email, code); }
     function verifyCode(enteredCode) { return verificationCode && verificationExpiry && Date.now() < verificationExpiry && enteredCode === verificationCode; }
-    function showVerificationModal(email) {
-        return new Promise((resolve) => {
-            const modalDiv = document.createElement("div");
-            modalDiv.className = "verify-modal";
-            modalDiv.innerHTML = `<div class="verify-card"><h3>🔐 Verify Your Email</h3><p>A code was sent to <strong>${escapeHtml(email)}</strong></p><input type="text" id="verifyCodeInput" placeholder="6‑digit code" style="width:100%; margin-bottom:15px;"><button id="verifySubmitBtn">Verify</button><button id="verifyCancelBtn" class="outline">Cancel</button></div>`;
-            document.body.appendChild(modalDiv);
-            modalDiv.querySelector("#verifySubmitBtn").onclick = () => {
-                if (verifyCode(modalDiv.querySelector("#verifyCodeInput").value.trim())) {
-                    localStorage.setItem("verifiedEmail", email);
-                    localStorage.setItem("verifiedTimestamp", Date.now().toString());
-                    currentUserEmail = email;
-                    modalDiv.remove();
-                    resolve(true);
-                } else { alert("Invalid/expired code."); modalDiv.remove(); resolve(false); }
-            };
-            modalDiv.querySelector("#verifyCancelBtn").onclick = () => { modalDiv.remove(); resolve(false); };
-        });
-    }
-    async function ensureVerified(email) {
-        const storedEmail = localStorage.getItem("verifiedEmail");
-        const storedTime = parseInt(localStorage.getItem("verifiedTimestamp") || "0");
-        if (storedEmail === email && (Date.now() - storedTime) < 24 * 60 * 60 * 1000) { currentUserEmail = email; return true; }
-        if (!await requestVerificationCode(email)) return false;
-        return await showVerificationModal(email);
-    }
+    function showVerificationModal(email) { return new Promise((resolve) => { const modalDiv = document.createElement("div"); modalDiv.className = "verify-modal"; modalDiv.innerHTML = `<div class="verify-card"><h3>🔐 Verify Your Email</h3><p>A code was sent to <strong>${escapeHtml(email)}</strong></p><input type="text" id="verifyCodeInput" placeholder="6‑digit code" style="width:100%; margin-bottom:15px;"><button id="verifySubmitBtn">Verify</button><button id="verifyCancelBtn" class="outline">Cancel</button></div>`; document.body.appendChild(modalDiv); modalDiv.querySelector("#verifySubmitBtn").onclick = () => { if(verifyCode(modalDiv.querySelector("#verifyCodeInput").value.trim())) { localStorage.setItem("verifiedEmail", email); localStorage.setItem("verifiedTimestamp", Date.now().toString()); currentUserEmail = email; modalDiv.remove(); resolve(true); } else { alert("Invalid/expired code."); modalDiv.remove(); resolve(false); } }; modalDiv.querySelector("#verifyCancelBtn").onclick = () => { modalDiv.remove(); resolve(false); }; }); }
+    async function ensureVerified(email) { const storedEmail = localStorage.getItem("verifiedEmail"); const storedTime = parseInt(localStorage.getItem("verifiedTimestamp") || "0"); if (storedEmail === email && (Date.now() - storedTime) < 24 * 60 * 60 * 1000) { currentUserEmail = email; return true; } if (!await requestVerificationCode(email)) return false; return await showVerificationModal(email); }
+    function getAdminPassword() { return localStorage.getItem("admin_password") || DEFAULT_ADMIN_PASSWORD; }
+    async function setAdminPassword(newPass) { localStorage.setItem("admin_password", newPass); await saveData(true); }
+    function showAdminLogin() { return new Promise((resolve) => { const modalDiv = document.createElement("div"); modalDiv.className = "admin-login-modal"; modalDiv.innerHTML = `<div class="admin-login-card"><h3>🔐 Admin Access</h3><input type="email" id="adminEmailInput" placeholder="Email" style="width:100%; margin:10px 0;" value="${ADMIN_EMAIL}"><input type="password" id="adminPasswordInput" placeholder="Password" style="width:100%; margin:10px 0;"><button id="adminLoginConfirm">Login</button><button id="adminLoginCancel" class="outline">Cancel</button></div>`; document.body.appendChild(modalDiv); modalDiv.querySelector("#adminLoginConfirm").onclick = () => { if(modalDiv.querySelector("#adminEmailInput").value.trim() === ADMIN_EMAIL && modalDiv.querySelector("#adminPasswordInput").value === getAdminPassword()) { modalDiv.remove(); resolve(true); } else { alert("Invalid credentials."); modalDiv.remove(); resolve(false); } }; modalDiv.querySelector("#adminLoginCancel").onclick = () => { modalDiv.remove(); resolve(false); }; }); }
 
-    function getAdminPassword() { let stored = localStorage.getItem("admin_password"); if(!stored) { localStorage.setItem("admin_password", DEFAULT_ADMIN_PASSWORD); return DEFAULT_ADMIN_PASSWORD; } return stored; }
-    async function setAdminPassword(newPass) { localStorage.setItem("admin_password", newPass); try { await saveData(true); } catch {} }
-    function showAdminLogin() {
-        return new Promise((resolve) => {
-            const modalDiv = document.createElement("div");
-            modalDiv.className = "admin-login-modal";
-            modalDiv.innerHTML = `<div class="admin-login-card"><h3>🔐 Admin Access</h3><input type="email" id="adminEmailInput" placeholder="Email" style="width:100%; margin:10px 0;" value="${ADMIN_EMAIL}"><input type="password" id="adminPasswordInput" placeholder="Password" style="width:100%; margin:10px 0;"><button id="adminLoginConfirm">Login</button><button id="adminLoginCancel" class="outline">Cancel</button></div>`;
-            document.body.appendChild(modalDiv);
-            modalDiv.querySelector("#adminLoginConfirm").onclick = () => { if(modalDiv.querySelector("#adminEmailInput").value.trim() === ADMIN_EMAIL && modalDiv.querySelector("#adminPasswordInput").value === getAdminPassword()) { modalDiv.remove(); resolve(true); } else { alert("Invalid credentials."); modalDiv.remove(); resolve(false); } };
-            modalDiv.querySelector("#adminLoginCancel").onclick = () => { modalDiv.remove(); resolve(false); };
-        });
-    }
-
+    // UI Rendering (user & manager) - similar to original but with dynamic token
     function formatDateTime(iso) { const d = new Date(iso); return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
-
-    function renderUserTopicsByEmail(email, statusFilter = "all", searchTerm = "") {
-        currentUserEmail = email; currentUserStatusFilter = statusFilter; currentSearchTerm = searchTerm;
-        const container = document.getElementById("myTopicsContainer");
-        if(!email) { container.innerHTML = `<div class="alert">📭 Please verify email.</div>`; return; }
-        let userTopics = allTopics.filter(t => t.userEmail === email);
-        if(userTopics.length === 0) { container.innerHTML = `<div class="alert">📭 No topics found for ${escapeHtml(email)}.</div>`; return; }
-        userTopics.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
-        if (searchTerm.trim()) { const term = searchTerm.toLowerCase(); userTopics = userTopics.filter(t => t.topicTitle.toLowerCase().includes(term) || t.ref.toLowerCase().includes(term)); }
-        let html = "";
-        for(let topic of userTopics) {
-            let allItems = topic.issues;
-            let pendingItems = topic.issues.filter(i => !i.acknowledged);
-            let resolvedItems = topic.issues.filter(i => i.acknowledged);
-            let itemsToShow = [];
-            if (statusFilter === "all") itemsToShow = allItems;
-            else if (statusFilter === "pending") itemsToShow = pendingItems;
-            else itemsToShow = resolvedItems;
-            if (itemsToShow.length === 0) continue;
-            const mailtoLink = `mailto:?subject=Feedback Summary: ${topic.ref}&body=Your feedback reference: ${topic.ref}.`;
-            html += `<div class="topic-item"><div class="flex-between"><span class="ref-badge">🔖 ${topic.ref}</span><span>📁 ${topic.category} <a href="${mailtoLink}" class="email-btn" title="Email summary">📧</a></span></div>
-            <div><strong>📌 Topic: ${escapeHtml(topic.topicTitle)}</strong></div><div>👤 ${topic.userName} · ${topic.userLocation} · ${escapeHtml(topic.userDepartment)}</div>
-            <div><small>Created: ${formatDateTime(topic.createdAt)}</small></div><div><strong>${statusFilter === "all" ? "Followup List" : (statusFilter === "pending" ? "Pending Acknowledgment" : "Acknowledged")}:</strong></div>`;
-            itemsToShow.forEach((item, idx) => {
-                const statusClass = item.acknowledged ? 'status-ack' : 'status-pending';
-                const statusText = item.acknowledged ? 'Acknowledged' : 'Pending Acknowledgment';
-                html += `<div style="background:#fafeff; border-radius: 20px; padding: 12px; margin-top: 8px;"><div class="flex-between"><span>${idx+1} · ${formatDateTime(item.date)}</span><span class="${statusClass}">${statusText}</span></div>
-                <p style="margin-top:6px;">📝 ${escapeHtml(item.description)}</p>
-                ${item.managerResponse ? `<div class="manager-response"><strong>📌 Leadership response:</strong> ${escapeHtml(item.managerResponse)}</div>` : ''}
-                </div>`;
-            });
-            html += `<button class="secondary addItemSmall" data-ref="${topic.ref}" style="margin-top:12px;">➕ Add follow-up</button></div>`;
-        }
-        if(html === "") html = `<div class="alert">📭 No ${statusFilter === "all" ? "items" : statusFilter} found.</div>`;
-        container.innerHTML = html;
-        document.querySelectorAll('.addItemSmall').forEach(btn => { btn.removeEventListener('click', handleUserAddItem); btn.addEventListener('click', handleUserAddItem); });
-    }
-    async function handleUserAddItem(e){
-        const ref = e.target.getAttribute('data-ref');
-        const desc = prompt("Describe the follow-up / update:");
-        if (desc?.trim()) {
-            const topic = allTopics.find(t => t.ref === ref);
-            if(topic && topic.userEmail === currentUserEmail){
-                const res = addItemToTopic(ref, desc.trim(), topic.userEmail);
-                if(res.success){ try { await saveData(true); } catch {} await sendNotifications(res.topic, desc, false); renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, currentSearchTerm); if(managerLoggedIn) renderManagerDashboardEnhanced(); alert("Follow-up added. Notification sent."); }
-                else alert(res.msg);
-            } else alert("Topic not found.");
-        }
-    }
-
-    async function handleAcknowledgeClick(topicRef, itemIdx) {
-        const topic = allTopics.find(t => t.ref === topicRef);
-        if (!topic) return;
-        const item = topic.issues[itemIdx];
-        if (item.acknowledged) {
-            item.acknowledged = false;
-            item.managerResponse = "";
-            try { await saveData(true); } catch {}
-            renderManagerDashboardEnhanced();
-            return;
-        }
-        const wantResponse = await customConfirm("Do you want to add a leadership response?");
-        if (wantResponse) {
-            const containerDiv = document.getElementById(`item-container-${topicRef}-${itemIdx}`);
-            if (!containerDiv) return;
-            const existingEditor = containerDiv.querySelector('.inline-response-editor');
-            if (existingEditor) existingEditor.remove();
-            const editorDiv = document.createElement('div');
-            editorDiv.className = 'inline-response-editor';
-            editorDiv.innerHTML = `
-                <textarea id="resp-inline-${topicRef}-${itemIdx}" rows="3" placeholder="Write your leadership response here..."></textarea>
-                <div style="display: flex; gap: 10px;">
-                    <button class="primary save-response-btn" data-ref="${topicRef}" data-idx="${itemIdx}">💾 Save</button>
-                    <button class="outline cancel-response-btn">Cancel</button>
-                </div>
-            `;
-            containerDiv.appendChild(editorDiv);
-            editorDiv.querySelector('.save-response-btn').addEventListener('click', async () => {
-                const response = editorDiv.querySelector(`#resp-inline-${topicRef}-${itemIdx}`).value.trim();
-                item.managerResponse = response;
-                item.acknowledged = true;
-                try { await saveData(true); } catch {}
-                renderManagerDashboardEnhanced();
-            });
-            editorDiv.querySelector('.cancel-response-btn').addEventListener('click', () => {
-                editorDiv.remove();
-                renderManagerDashboardEnhanced();
-            });
-        } else {
-            item.acknowledged = true;
-            try { await saveData(true); } catch {}
-            renderManagerDashboardEnhanced();
-        }
-    }
-    async function handleEditResponse(topicRef, itemIdx) {
-        const topic = allTopics.find(t => t.ref === topicRef);
-        if (!topic) return;
-        const item = topic.issues[itemIdx];
-        const currentResponse = item.managerResponse || "";
-        if (!currentResponse) {
-            const addNow = await customConfirm("There is no response yet. Do you want to add one?");
-            if (!addNow) return;
-        }
-        const containerDiv = document.getElementById(`item-container-${topicRef}-${itemIdx}`);
-        if (!containerDiv) return;
-        const existingEditor = containerDiv.querySelector('.inline-response-editor');
-        if (existingEditor) existingEditor.remove();
-        const editorDiv = document.createElement('div');
-        editorDiv.className = 'inline-response-editor';
-        editorDiv.innerHTML = `
-            <textarea id="resp-edit-${topicRef}-${itemIdx}" rows="3" placeholder="Edit response...">${escapeHtml(currentResponse)}</textarea>
-            <div style="display: flex; gap: 10px;">
-                <button class="primary save-edit-response" data-ref="${topicRef}" data-idx="${itemIdx}">💾 Save</button>
-                <button class="outline cancel-edit-response">Cancel</button>
-            </div>
-        `;
-        containerDiv.appendChild(editorDiv);
-        editorDiv.querySelector('.save-edit-response').addEventListener('click', async () => {
-            const newResponse = editorDiv.querySelector(`#resp-edit-${topicRef}-${itemIdx}`).value.trim();
-            item.managerResponse = newResponse;
-            try { await saveData(true); } catch {}
-            renderManagerDashboardEnhanced();
-        });
-        editorDiv.querySelector('.cancel-edit-response').addEventListener('click', () => { editorDiv.remove(); });
-    }
-
-    function getStats() {
-        let totalTopics = allTopics.length, totalItems = 0, pendingItems = 0, acknowledgedItems = 0;
-        for(let topic of allTopics){ totalItems += topic.issues.length; for(let item of topic.issues){ if(item.acknowledged) acknowledgedItems++; else pendingItems++; } }
-        return { totalTopics, totalItems, pendingItems, acknowledgedItems };
-    }
-
-    function renderManagerDashboardEnhanced() {
-        if(!managerLoggedIn) return;
-        const stats = getStats();
-        document.getElementById("statsGrid").innerHTML = `
-            <div class="stat-card"><div class="stat-number">${stats.totalTopics}</div><div class="stat-label">Total Topics</div></div>
-            <div class="stat-card"><div class="stat-number">${stats.totalItems}</div><div class="stat-label">Total Items</div></div>
-            <div class="stat-card"><div class="stat-number" style="color:#c96f0e;">${stats.pendingItems}</div><div class="stat-label">Pending Acknowledgment</div></div>
-            <div class="stat-card"><div class="stat-number" style="color:#2c7a4d;">${stats.acknowledgedItems}</div><div class="stat-label">Acknowledged</div></div>
-        `;
-        let filteredTopics = [...allTopics];
-        if(currentManagerFilter === "pending") filteredTopics = allTopics.filter(t => t.issues.some(i => !i.acknowledged));
-        else if(currentManagerFilter === "resolved") filteredTopics = allTopics.filter(t => t.issues.every(i => i.acknowledged));
-        let html = "";
-        for(let topic of filteredTopics){
-            html += `<div class="topic-item"><div class="flex-between"><span class="ref-badge">${topic.ref}</span><span>🏷️ ${topic.category}</span></div>
-            <div><strong>📌 Topic: ${escapeHtml(topic.topicTitle)}</strong></div><div>👤 ${escapeHtml(topic.userName)} · ${topic.userEmail} · ${escapeHtml(topic.userDepartment)}</div>`;
-            for(let idx=0; idx<topic.issues.length; idx++){
-                const item = topic.issues[idx];
-                const statusText = item.acknowledged ? 'Acknowledged' : 'Pending Acknowledgment';
-                const statusClass = item.acknowledged ? 'status-ack' : 'status-pending';
-                html += `<div id="item-container-${topic.ref}-${idx}" style="margin-top:12px; background:#ffffff; border-left: 3px solid ${item.acknowledged ? '#2c7a4d' : '#e68a2e'}; padding: 12px; border-radius: 20px;">
-                    <div class="flex-between">
-                        <span><strong>${idx+1}</strong> · ${formatDateTime(item.date)}</span>
-                        <span class="${statusClass}">${statusText}</span>
-                    </div>
-                    <p style="margin-top:8px;">📝 ${escapeHtml(item.description)}</p>`;
-                if (item.managerResponse) {
-                    html += `<div class="manager-response"><strong>📌 Leadership response:</strong> ${escapeHtml(item.managerResponse)}</div>`;
-                }
-                html += `<div class="flex-between" style="margin-top: 12px;">
-                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input type="checkbox" class="ack-checkbox" data-ref="${topic.ref}" data-idx="${idx}" ${item.acknowledged ? 'checked' : ''}> 
-                                <span>Acknowledge</span>
-                            </label>`;
-                if (item.acknowledged) {
-                    html += `<button class="edit-response-btn" data-ref="${topic.ref}" data-idx="${idx}">✏️ Edit Response</button>`;
-                }
-                html += `</div></div>`;
-            }
-            html += `</div>`;
-        }
-        if(filteredTopics.length===0) html = `<div class="alert">✨ No topics match the selected filter.</div>`;
-        document.getElementById("managerTopicsList").innerHTML = html;
-        attachManagerEvents();
-    }
-
-    function attachManagerEvents() {
-        document.querySelectorAll('.ack-checkbox').forEach(chk => {
-            chk.removeEventListener('change', checkboxChangeHandler);
-            chk.addEventListener('change', checkboxChangeHandler);
-        });
-        document.querySelectorAll('.edit-response-btn').forEach(btn => {
-            btn.removeEventListener('click', editResponseHandler);
-            btn.addEventListener('click', editResponseHandler);
-        });
-    }
-
-    async function checkboxChangeHandler(e) {
-        const chk = e.target;
-        const ref = chk.getAttribute('data-ref');
-        const idx = parseInt(chk.getAttribute('data-idx'));
-        const topic = allTopics.find(t => t.ref === ref);
-        if (!topic) return;
-        const wasAcknowledged = topic.issues[idx].acknowledged;
-        if (chk.checked && !wasAcknowledged) {
-            chk.checked = false;
-            await handleAcknowledgeClick(ref, idx);
-        } else if (!chk.checked && wasAcknowledged) {
-            topic.issues[idx].acknowledged = false;
-            topic.issues[idx].managerResponse = "";
-            try { await saveData(true); } catch {}
-            renderManagerDashboardEnhanced();
-        } else {
-            chk.checked = wasAcknowledged;
-        }
-    }
-
-    async function editResponseHandler(e) {
-        const ref = e.currentTarget.getAttribute('data-ref');
-        const idx = parseInt(e.currentTarget.getAttribute('data-idx'));
-        await handleEditResponse(ref, idx);
-    }
-
-    async function changeAdminPassword() {
-        const currentPwd = prompt("Enter current password:");
-        if(currentPwd !== getAdminPassword()) { alert("Incorrect."); return; }
-        const newPwd = prompt("New password (min 4 chars):");
-        if(newPwd && newPwd.length>=4) { await setAdminPassword(newPwd); alert("Password changed."); }
-        else alert("Invalid.");
-    }
-
-    function logout() {
-        activeRole = null; managerLoggedIn = false; currentUserEmail = "";
-        localStorage.removeItem("verifiedEmail"); localStorage.removeItem("verifiedTimestamp"); sessionStorage.removeItem("mgrLogged");
-        if(pollingInterval) clearInterval(pollingInterval);
-        document.getElementById("userSection").classList.add("hidden");
-        document.getElementById("managerDashboard").classList.add("hidden");
-        const oldWelcome = document.getElementById("roleSelection");
-        if (oldWelcome) oldWelcome.remove();
-        const tempDiv = document.createElement("div"); tempDiv.innerHTML = welcomeHTML;
-        const newWelcome = tempDiv.firstChild; newWelcome.id = "roleSelection";
-        document.getElementById("appContainer").insertBefore(newWelcome, document.getElementById("userSection"));
-        document.getElementById("startPortalBtn").addEventListener("click", startPortalFlow);
-        document.getElementById("logoutContainer").innerHTML = "";
-    }
-    function setupLogoutButton() { const container = document.getElementById("logoutContainer"); container.innerHTML = `<button id="globalLogoutBtn" class="outline logout-btn">🚪 Logout</button>`; document.getElementById("globalLogoutBtn").addEventListener("click", logout); }
-
+    function renderUserTopicsByEmail(email, statusFilter = "all", searchTerm = "") { /* same robust logic */ currentUserEmail = email; currentUserStatusFilter = statusFilter; currentSearchTerm = searchTerm; const container = document.getElementById("myTopicsContainer"); if(!email) { container.innerHTML = `<div class="alert">📭 Please verify email.</div>`; return; } let userTopics = allTopics.filter(t => t.userEmail === email); if(userTopics.length === 0) { container.innerHTML = `<div class="alert">📭 No topics found for ${escapeHtml(email)}.</div>`; return; } userTopics.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)); if(searchTerm.trim()){ const term=searchTerm.toLowerCase(); userTopics = userTopics.filter(t=>t.topicTitle.toLowerCase().includes(term)||t.ref.toLowerCase().includes(term)); } let html=""; for(let topic of userTopics){ let itemsToShow = []; if(statusFilter === "all") itemsToShow = topic.issues; else if(statusFilter === "pending") itemsToShow = topic.issues.filter(i=>!i.acknowledged); else itemsToShow = topic.issues.filter(i=>i.acknowledged); if(itemsToShow.length===0) continue; html += `<div class="topic-item"><div class="flex-between"><span class="ref-badge">🔖 ${topic.ref}</span><span>📁 ${topic.category}</span></div><div><strong>📌 Topic: ${escapeHtml(topic.topicTitle)}</strong></div><div>👤 ${topic.userName} · ${topic.userLocation}</div><div><small>Created: ${formatDateTime(topic.createdAt)}</small></div><div><strong>Follow-up list:</strong></div>`; itemsToShow.forEach((item,idx)=>{ const statusClass = item.acknowledged ? 'status-ack' : 'status-pending'; const statusText = item.acknowledged ? 'Acknowledged' : 'Pending'; html+=`<div style="background:#fafeff; border-radius:20px; padding:12px; margin-top:8px;"><div class="flex-between"><span>${idx+1} · ${formatDateTime(item.date)}</span><span class="${statusClass}">${statusText}</span></div><p>📝 ${escapeHtml(item.description)}</p>${item.managerResponse ? `<div class="manager-response"><strong>📌 Leadership response:</strong> ${escapeHtml(item.managerResponse)}</div>` : ''}</div>`; }); html+=`<button class="secondary addItemSmall" data-ref="${topic.ref}" style="margin-top:12px;">➕ Add follow-up</button></div>`; } if(html==="") html = `<div class="alert">📭 No ${statusFilter} items found.</div>`; container.innerHTML = html; document.querySelectorAll('.addItemSmall').forEach(btn=>btn.addEventListener('click', handleUserAddItem)); }
+    async function handleUserAddItem(e){ const ref = e.target.getAttribute('data-ref'); const desc = prompt("Describe the follow-up / update:"); if(desc?.trim()){ const topic = allTopics.find(t=>t.ref===ref); if(topic && topic.userEmail===currentUserEmail){ const res = addItemToTopic(ref, desc.trim(), topic.userEmail); if(res.success){ await saveData(true); await sendNotifications(res.topic, desc, false); renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, currentSearchTerm); if(managerLoggedIn) renderManagerDashboardEnhanced(); alert("Follow-up added. Notification sent."); } else alert("Failed"); } } }
+    function getStats(){ let totalTopics=allTopics.length, totalItems=0, pendingItems=0, ackItems=0; for(let t of allTopics){ totalItems+=t.issues.length; for(let i of t.issues){ if(i.acknowledged) ackItems++; else pendingItems++; } } return {totalTopics,totalItems,pendingItems,acknowledgedItems:ackItems}; }
+    async function handleAcknowledgeClick(topicRef, itemIdx){ const topic = allTopics.find(t=>t.ref===topicRef); if(!topic) return; const item = topic.issues[itemIdx]; if(item.acknowledged){ item.acknowledged=false; item.managerResponse=""; await saveData(true); renderManagerDashboardEnhanced(); return; } const wantResponse = await customConfirm("Add leadership response?"); if(wantResponse){ const containerDiv = document.getElementById(`item-container-${topicRef}-${itemIdx}`); if(!containerDiv) return; const editorDiv = document.createElement('div'); editorDiv.className='inline-response-editor'; editorDiv.innerHTML=`<textarea id="resp-inline-${topicRef}-${itemIdx}" rows="3" placeholder="Leadership response..."></textarea><div style="display:flex; gap:10px;"><button class="primary save-response-btn" data-ref="${topicRef}" data-idx="${itemIdx}">💾 Save</button><button class="outline cancel-response-btn">Cancel</button></div>`; containerDiv.appendChild(editorDiv); editorDiv.querySelector('.save-response-btn').addEventListener('click', async ()=>{ const response = editorDiv.querySelector(`#resp-inline-${topicRef}-${itemIdx}`).value.trim(); item.managerResponse = response; item.acknowledged = true; await saveData(true); renderManagerDashboardEnhanced(); }); editorDiv.querySelector('.cancel-response-btn').addEventListener('click',()=>{ editorDiv.remove(); }); } else { item.acknowledged=true; await saveData(true); renderManagerDashboardEnhanced(); } }
+    async function handleEditResponse(topicRef, itemIdx){ const topic = allTopics.find(t=>t.ref===topicRef); if(!topic) return; const item = topic.issues[itemIdx]; const containerDiv = document.getElementById(`item-container-${topicRef}-${itemIdx}`); if(!containerDiv) return; const editorDiv = document.createElement('div'); editorDiv.className='inline-response-editor'; editorDiv.innerHTML=`<textarea id="resp-edit-${topicRef}-${itemIdx}" rows="3">${escapeHtml(item.managerResponse||"")}</textarea><div style="display:flex; gap:10px;"><button class="primary save-edit-response" data-ref="${topicRef}" data-idx="${itemIdx}">💾 Save</button><button class="outline cancel-edit-response">Cancel</button></div>`; containerDiv.appendChild(editorDiv); editorDiv.querySelector('.save-edit-response').addEventListener('click', async ()=>{ item.managerResponse = editorDiv.querySelector(`#resp-edit-${topicRef}-${itemIdx}`).value.trim(); await saveData(true); renderManagerDashboardEnhanced(); }); editorDiv.querySelector('.cancel-edit-response').addEventListener('click',()=>{ editorDiv.remove(); }); }
+    function renderManagerDashboardEnhanced(){ if(!managerLoggedIn) return; const stats = getStats(); document.getElementById("statsGrid").innerHTML = `<div class="stat-card"><div class="stat-number">${stats.totalTopics}</div><div class="stat-label">Topics</div></div><div class="stat-card"><div class="stat-number">${stats.totalItems}</div><div class="stat-label">Items</div></div><div class="stat-card"><div class="stat-number" style="color:#c96f0e;">${stats.pendingItems}</div><div class="stat-label">Pending</div></div><div class="stat-card"><div class="stat-number" style="color:#2c7a4d;">${stats.acknowledgedItems}</div><div class="stat-label">Acknowledged</div></div>`; let filteredTopics = [...allTopics]; if(currentManagerFilter === "pending") filteredTopics = allTopics.filter(t=>t.issues.some(i=>!i.acknowledged)); else if(currentManagerFilter === "resolved") filteredTopics = allTopics.filter(t=>t.issues.every(i=>i.acknowledged)); let html=""; for(let topic of filteredTopics){ html+=`<div class="topic-item"><div class="flex-between"><span class="ref-badge">${topic.ref}</span><span>🏷️ ${topic.category}</span></div><div><strong>📌 Topic: ${escapeHtml(topic.topicTitle)}</strong></div><div>👤 ${escapeHtml(topic.userName)} · ${topic.userEmail}</div>`; for(let idx=0; idx<topic.issues.length; idx++){ const item = topic.issues[idx]; html+=`<div id="item-container-${topic.ref}-${idx}" style="margin-top:12px; background:#ffffff; border-left: 3px solid ${item.acknowledged ? '#2c7a4d' : '#e68a2e'}; padding: 12px; border-radius: 20px;"><div class="flex-between"><span><strong>${idx+1}</strong> · ${formatDateTime(item.date)}</span><span class="${item.acknowledged ? 'status-ack' : 'status-pending'}">${item.acknowledged ? 'Acknowledged' : 'Pending'}</span></div><p>📝 ${escapeHtml(item.description)}</p>${item.managerResponse ? `<div class="manager-response"><strong>📌 Response:</strong> ${escapeHtml(item.managerResponse)}</div>` : ''}<div class="flex-between" style="margin-top: 12px;"><label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox" class="ack-checkbox" data-ref="${topic.ref}" data-idx="${idx}" ${item.acknowledged ? 'checked' : ''}> <span>Acknowledge</span></label>${item.acknowledged ? `<button class="edit-response-btn" data-ref="${topic.ref}" data-idx="${idx}">✏️ Edit Response</button>` : ''}</div></div>`; } html+=`</div>`; } if(filteredTopics.length===0) html = `<div class="alert">✨ No topics match filter.</div>`; document.getElementById("managerTopicsList").innerHTML = html; attachManagerEvents(); }
+    function attachManagerEvents(){ document.querySelectorAll('.ack-checkbox').forEach(chk=>{ chk.removeEventListener('change', checkboxChangeHandler); chk.addEventListener('change', checkboxChangeHandler); }); document.querySelectorAll('.edit-response-btn').forEach(btn=>{ btn.removeEventListener('click', editResponseHandler); btn.addEventListener('click', editResponseHandler); }); }
+    async function checkboxChangeHandler(e){ const chk = e.target; const ref = chk.getAttribute('data-ref'); const idx = parseInt(chk.getAttribute('data-idx')); const topic = allTopics.find(t=>t.ref===ref); if(!topic) return; const was = topic.issues[idx].acknowledged; if(chk.checked && !was){ chk.checked=false; await handleAcknowledgeClick(ref, idx); } else if(!chk.checked && was){ topic.issues[idx].acknowledged=false; topic.issues[idx].managerResponse=""; await saveData(true); renderManagerDashboardEnhanced(); } else { chk.checked = was; } }
+    async function editResponseHandler(e){ const ref = e.currentTarget.getAttribute('data-ref'); const idx = parseInt(e.currentTarget.getAttribute('data-idx')); await handleEditResponse(ref, idx); }
+    function customConfirm(message){ return new Promise((resolve)=>{ const modalDiv = document.createElement("div"); modalDiv.className="custom-confirm-modal"; modalDiv.innerHTML=`<div class="confirm-card"><p style="margin-bottom:20px;">${escapeHtml(message)}</p><button id="confirmYesBtn" class="primary">Yes</button><button id="confirmNoBtn" class="outline">No</button></div>`; document.body.appendChild(modalDiv); modalDiv.querySelector("#confirmYesBtn").onclick = () => { modalDiv.remove(); resolve(true); }; modalDiv.querySelector("#confirmNoBtn").onclick = () => { modalDiv.remove(); resolve(false); }; }); }
+    
+    // Flow with token
     async function startPortalFlow() {
+        if(!hasValidToken()){ alert("GitHub token missing. Please configure token first."); return; }
         const email = prompt("Enter your email address:");
         if(!email) return;
         await loadData(true);
         if(email === ADMIN_EMAIL) {
             const adminOk = await showAdminLogin();
-            if(adminOk) {
-                activeRole = "admin"; managerLoggedIn = true; sessionStorage.setItem("mgrLogged","true");
-                const welcomeDiv = document.getElementById("roleSelection"); if(welcomeDiv) welcomeDiv.remove();
-                document.getElementById("userSection").classList.add("hidden"); document.getElementById("managerDashboard").classList.remove("hidden");
-                setupLogoutButton(); lastDataChecksum = computeChecksum(); renderManagerDashboardEnhanced();
-                if(pollingInterval) clearInterval(pollingInterval); pollingInterval = setInterval(async ()=>{ if(managerLoggedIn){ await loadData(); if(computeChecksum() !== lastDataChecksum){ lastDataChecksum = computeChecksum(); renderManagerDashboardEnhanced(); } } }, 7000);
-            }
+            if(adminOk){ activeRole="admin"; managerLoggedIn=true; document.getElementById("userSection").classList.add("hidden"); document.getElementById("managerDashboard").classList.remove("hidden"); setupLogoutButton(); renderManagerDashboardEnhanced(); if(pollingInterval) clearInterval(pollingInterval); pollingInterval = setInterval(async ()=>{ if(managerLoggedIn){ await loadData(); if(computeChecksum() !== lastDataChecksum){ lastDataChecksum=computeChecksum(); renderManagerDashboardEnhanced(); } } }, 7000); }
         } else {
             const verified = await ensureVerified(email);
-            if(verified) {
-                activeRole = "user"; managerLoggedIn = false;
-                const welcomeDiv = document.getElementById("roleSelection"); if(welcomeDiv) welcomeDiv.remove();
-                document.getElementById("userSection").classList.remove("hidden"); document.getElementById("managerDashboard").classList.add("hidden");
-                setupLogoutButton(); renderUserTopicsByEmail(currentUserEmail, "all", "");
-            } else alert("Verification failed.");
+            if(verified){ activeRole="user"; managerLoggedIn=false; document.getElementById("userSection").classList.remove("hidden"); document.getElementById("managerDashboard").classList.add("hidden"); setupLogoutButton(); renderUserTopicsByEmail(currentUserEmail, "all", ""); }
+            else alert("Verification failed.");
         }
     }
-
-    window.addEventListener('DOMContentLoaded', async () => {
-        await loadData(true);
-        document.getElementById("startPortalBtn").addEventListener("click", startPortalFlow);
-        document.getElementById("submitFeedbackBtn").addEventListener("click", handleSubmit);
-        document.getElementById("searchTopicsBtn").addEventListener("click", () => { if(currentUserEmail) { const term = document.getElementById("searchTopicsInput").value.trim(); renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, term); } else alert("Please verify email first."); });
-        document.getElementById("resetSearchBtn").addEventListener("click", () => { document.getElementById("searchTopicsInput").value = ""; if(currentUserEmail) renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, ""); });
-        document.getElementById("refreshManagerBtn").addEventListener("click", async () => { if(managerLoggedIn){ await loadData(true); renderManagerDashboardEnhanced(); } });
-        document.getElementById("changeAdminPasswordBtn").addEventListener("click", changeAdminPassword);
-        document.querySelectorAll(".user-status-btn").forEach(btn => { btn.addEventListener("click", () => { document.querySelectorAll(".user-status-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); if(currentUserEmail) renderUserTopicsByEmail(currentUserEmail, btn.getAttribute("data-ustatus"), currentSearchTerm); }); });
-        document.querySelectorAll(".filter-btn").forEach(btn => { btn.addEventListener("click", () => { document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); currentManagerFilter = btn.getAttribute("data-filter"); if(managerLoggedIn) renderManagerDashboardEnhanced(); }); });
-        const storedVerified = localStorage.getItem("verifiedEmail"); const storedTime = parseInt(localStorage.getItem("verifiedTimestamp") || "0");
-        if (storedVerified && (Date.now() - storedTime) < 24*60*60*1000 && storedVerified !== ADMIN_EMAIL) {
-            activeRole = "user"; managerLoggedIn = false; currentUserEmail = storedVerified;
-            const welcomeDiv = document.getElementById("roleSelection"); if (welcomeDiv) welcomeDiv.remove();
-            document.getElementById("userSection").classList.remove("hidden"); document.getElementById("managerDashboard").classList.add("hidden");
-            setupLogoutButton(); renderUserTopicsByEmail(currentUserEmail, "all", "");
-        } else {
-            document.getElementById("roleSelection").classList.remove("hidden"); document.getElementById("userSection").classList.add("hidden"); document.getElementById("managerDashboard").classList.add("hidden");
-        }
-        const deptSelect = document.getElementById("empDept");
-        if(deptSelect) deptSelect.dispatchEvent(new Event('change'));
+    function computeChecksum(){ return JSON.stringify(allTopics).length + "-" + allTopics.length; }
+    function setupLogoutButton(){ const container = document.getElementById("logoutContainer"); container.innerHTML = `<button id="globalLogoutBtn" class="outline logout-btn">🚪 Logout</button>`; document.getElementById("globalLogoutBtn").addEventListener("click", logout); }
+    function logout(){ activeRole=null; managerLoggedIn=false; currentUserEmail=""; if(pollingInterval) clearInterval(pollingInterval); localStorage.removeItem("verifiedEmail"); localStorage.removeItem("verifiedTimestamp"); document.getElementById("userSection").classList.add("hidden"); document.getElementById("managerDashboard").classList.add("hidden"); location.reload(); }
+    
+    // Token UI handlers
+    function updateTokenUI() { const tokenSet = hasValidToken(); const configDiv = document.getElementById("tokenConfigArea"); const quickDiv = document.getElementById("quickStartArea"); if(tokenSet) { configDiv.classList.add("hidden"); quickDiv.classList.remove("hidden"); document.getElementById("tokenOkMsg").innerHTML = `✅ Token active (${getGitHubToken().substring(0,8)}... )`; } else { configDiv.classList.remove("hidden"); quickDiv.classList.add("hidden"); } }
+    function saveTokenAndInit(){ const token = document.getElementById("githubTokenInput").value.trim(); const gist = document.getElementById("gistIdInput").value.trim(); if(!token){ alert("Please enter a valid GitHub token with gist scope."); return; } setGitHubConfig(token, gist || DEFAULT_GIST_ID); localStorage.setItem("gist_id", gist || DEFAULT_GIST_ID); updateTokenUI(); alert("Token saved! Click 'Enter Portal' to continue."); }
+    function changeTokenFlow(){ localStorage.removeItem("github_token"); updateTokenUI(); document.getElementById("githubTokenInput").value = ""; document.getElementById("gistIdInput").value = getGistId(); }
+    
+    document.addEventListener("DOMContentLoaded", async ()=>{
+        document.getElementById("saveTokenBtn")?.addEventListener("click", saveTokenAndInit);
+        document.getElementById("proceedToPortalBtn")?.addEventListener("click", startPortalFlow);
+        document.getElementById("changeTokenBtn")?.addEventListener("click", changeTokenFlow);
+        document.getElementById("reconfigureTokenBtn")?.addEventListener("click", ()=>{ changeTokenFlow(); });
+        document.getElementById("adminSyncSettingsBtn")?.addEventListener("click", ()=>{ alert("You can change token on main screen after logout."); });
+        document.getElementById("submitFeedbackBtn")?.addEventListener("click", async ()=>{ if(!hasValidToken()){ alert("GitHub token missing."); return; } await handleSubmit(); });
+        document.getElementById("searchTopicsBtn")?.addEventListener("click", ()=>{ if(currentUserEmail){ const term = document.getElementById("searchTopicsInput").value.trim(); renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, term); } });
+        document.getElementById("resetSearchBtn")?.addEventListener("click", ()=>{ document.getElementById("searchTopicsInput").value=""; if(currentUserEmail) renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, ""); });
+        document.getElementById("refreshManagerBtn")?.addEventListener("click", async ()=>{ if(managerLoggedIn){ await loadData(true); renderManagerDashboardEnhanced(); } });
+        document.getElementById("changeAdminPasswordBtn")?.addEventListener("click", changeAdminPassword);
+        document.querySelectorAll(".user-status-btn").forEach(btn=>btn.addEventListener("click",()=>{ document.querySelectorAll(".user-status-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); if(currentUserEmail) renderUserTopicsByEmail(currentUserEmail, btn.getAttribute("data-ustatus"), currentSearchTerm); }));
+        document.querySelectorAll(".filter-btn").forEach(btn=>btn.addEventListener("click",()=>{ document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); currentManagerFilter=btn.getAttribute("data-filter"); if(managerLoggedIn) renderManagerDashboardEnhanced(); }));
+        document.getElementById("empDept")?.addEventListener("change", (e)=>{ document.getElementById("otherDeptContainer").classList.toggle("hidden", e.target.value !== "Other"); });
+        updateTokenUI();
+        if(hasValidToken()){ try{ await loadData(false); }catch(e){} }
+        async function handleSubmit(){ const name=document.getElementById("empName").value.trim(), email=document.getElementById("empEmail").value.trim(), location=document.getElementById("empLocation").value, department=getSelectedDepartment(), category=document.getElementById("feedbackCategory").value, topicTitle=document.getElementById("topicTitle").value.trim(), desc=document.getElementById("feedbackDesc").value.trim(); if(!name||!email||!desc||!topicTitle){ alert("Fill all fields"); return; } const userDetails={name,email,location,department}; const existing=findMatchingTopicByTitle(email,topicTitle); if(existing){ const yes=await customConfirm(`Existing topic "${existing.topicTitle}" (${existing.ref}). Add item?`); if(yes){ const res=addItemToTopic(existing.ref,desc,email); if(res.success){ await saveData(true); await sendNotifications(res.topic,desc,false); alert(`Added to ${existing.ref}`); document.getElementById("feedbackDesc").value=""; document.getElementById("topicTitle").value=""; if(currentUserEmail===email) renderUserTopicsByEmail(email,currentUserStatusFilter,currentSearchTerm); if(managerLoggedIn) renderManagerDashboardEnhanced(); return; }else{alert("Failed"); return;} } } const newTopic=createNewTopic(userDetails,category,topicTitle,desc); await saveData(true); await sendNotifications(newTopic,desc,true); alert(`✅ Submitted! Ref: ${newTopic.ref}`); document.getElementById("feedbackDesc").value=""; document.getElementById("topicTitle").value=""; if(currentUserEmail===email) renderUserTopicsByEmail(email,currentUserStatusFilter,currentSearchTerm); if(managerLoggedIn) renderManagerDashboardEnhanced(); }
+        window.handleSubmit = handleSubmit;
+        async function changeAdminPassword(){ const cur=prompt("Current password:"); if(cur!==getAdminPassword()){ alert("Incorrect"); return; } const newPwd=prompt("New password (min 4):"); if(newPwd&&newPwd.length>=4){ await setAdminPassword(newPwd); alert("Changed."); } else alert("Invalid."); }
     });
 </script>
 </body>
