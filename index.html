@@ -261,7 +261,7 @@
     async function setAdminPassword(newPass) { localStorage.setItem("admin_password", newPass); await saveData(true); }
     function showAdminLogin() { return new Promise((resolve) => { const modalDiv = document.createElement("div"); modalDiv.className = "admin-login-modal"; modalDiv.innerHTML = `<div class="admin-login-card"><h3>🔐 Admin Access</h3><input type="email" id="adminEmailInput" placeholder="Email" style="width:100%; margin:10px 0;" value="${ADMIN_EMAIL}"><input type="password" id="adminPasswordInput" placeholder="Password" style="width:100%; margin:10px 0;"><button id="adminLoginConfirm">Login</button><button id="adminLoginCancel" class="outline">Cancel</button></div>`; document.body.appendChild(modalDiv); modalDiv.querySelector("#adminLoginConfirm").onclick = () => { if(modalDiv.querySelector("#adminEmailInput").value.trim() === ADMIN_EMAIL && modalDiv.querySelector("#adminPasswordInput").value === getAdminPassword()) { modalDiv.remove(); resolve(true); } else { alert("Invalid credentials."); modalDiv.remove(); resolve(false); } }; modalDiv.querySelector("#adminLoginCancel").onclick = () => { modalDiv.remove(); resolve(false); }; }); }
     
-    // Rendering functions (simplified but complete)
+    // Rendering functions
     function formatDateTime(iso) { const d = new Date(iso); return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
     function renderUserTopicsByEmail(email, statusFilter = "all", searchTerm = "") {
         currentUserEmail = email; currentUserStatusFilter = statusFilter; currentSearchTerm = searchTerm;
@@ -298,7 +298,46 @@
     async function changeAdminPassword(){ const cur=prompt("Current password:"); if(cur!==getAdminPassword()){ alert("Incorrect"); return; } const newPwd=prompt("New password (min 4):"); if(newPwd&&newPwd.length>=4){ await setAdminPassword(newPwd); alert("Password changed."); } else alert("Invalid."); }
     function logout(){ activeRole=null; managerLoggedIn=false; currentUserEmail=""; if(pollingInterval) clearInterval(pollingInterval); localStorage.removeItem("verifiedEmail"); localStorage.removeItem("verifiedTimestamp"); document.getElementById("userSection").classList.add("hidden"); document.getElementById("managerDashboard").classList.add("hidden"); location.reload(); }
     function setupLogoutButton(){ const container = document.getElementById("logoutContainer"); container.innerHTML = `<button id="globalLogoutBtn" class="outline logout-btn">🚪 Logout</button>`; document.getElementById("globalLogoutBtn").addEventListener("click", logout); }
-    async function startPortalFlow() { const email = prompt("Enter your email address:"); if(!email) return; await loadData(true); if(email === ADMIN_EMAIL) { const adminOk = await showAdminLogin(); if(adminOk){ activeRole="admin"; managerLoggedIn=true; document.getElementById("userSection").classList.add("hidden"); document.getElementById("managerDashboard").classList.remove("hidden"); setupLogoutButton(); renderManagerDashboardEnhanced(); if(pollingInterval) clearInterval(pollingInterval); pollingInterval = setInterval(async ()=>{ if(managerLoggedIn){ await loadData(); if(computeChecksum() !== lastDataChecksum){ lastDataChecksum=computeChecksum(); renderManagerDashboardEnhanced(); } } }, 7000); } } else { const verified = await ensureVerified(email); if(verified){ activeRole="user"; managerLoggedIn=false; document.getElementById("userSection").classList.remove("hidden"); document.getElementById("managerDashboard").classList.add("hidden"); setupLogoutButton(); renderUserTopicsByEmail(currentUserEmail, "all", ""); } else alert("Verification failed."); } }
+    async function startPortalFlow() {
+        const email = prompt("Enter your email address:");
+        if(!email) return;
+        await loadData(true);
+        if(email === ADMIN_EMAIL) {
+            const adminOk = await showAdminLogin();
+            if(adminOk){
+                activeRole="admin"; managerLoggedIn=true;
+                // Remove welcome screen
+                const welcomeDiv = document.getElementById("roleSelection");
+                if(welcomeDiv) welcomeDiv.remove();
+                document.getElementById("userSection").classList.add("hidden");
+                document.getElementById("managerDashboard").classList.remove("hidden");
+                setupLogoutButton();
+                renderManagerDashboardEnhanced();
+                if(pollingInterval) clearInterval(pollingInterval);
+                pollingInterval = setInterval(async ()=>{
+                    if(managerLoggedIn){
+                        await loadData();
+                        if(computeChecksum() !== lastDataChecksum){
+                            lastDataChecksum=computeChecksum();
+                            renderManagerDashboardEnhanced();
+                        }
+                    }
+                }, 7000);
+            }
+        } else {
+            const verified = await ensureVerified(email);
+            if(verified){
+                activeRole="user"; managerLoggedIn=false;
+                // Remove welcome screen
+                const welcomeDiv = document.getElementById("roleSelection");
+                if(welcomeDiv) welcomeDiv.remove();
+                document.getElementById("userSection").classList.remove("hidden");
+                document.getElementById("managerDashboard").classList.add("hidden");
+                setupLogoutButton();
+                renderUserTopicsByEmail(currentUserEmail, "all", "");
+            } else alert("Verification failed.");
+        }
+    }
     function updateTokenUI(){ const tokenSet = hasValidToken(); const statusSpan = document.getElementById("tokenStatusArea"); if(tokenSet) statusSpan.innerHTML = "✅ Cloud sync active (GitHub token configured)"; else statusSpan.innerHTML = "⚙️ No cloud token configured - setup required for sync"; }
     function showSetupPanel(){ document.getElementById("tokenConfigPanel").classList.remove("hidden"); }
     function saveTokenAndInit(){ const token = document.getElementById("githubTokenInput").value.trim(); const gist = document.getElementById("gistIdInput").value.trim(); if(!token){ alert("Please enter a valid GitHub token with gist scope."); return; } setGitHubConfig(token, gist || DEFAULT_GIST_ID); updateTokenUI(); document.getElementById("tokenConfigPanel").classList.add("hidden"); alert("Token saved! You can now use cloud sync."); }
@@ -308,7 +347,32 @@
     document.getElementById("startPortalBtn")?.addEventListener("click", startPortalFlow);
     document.getElementById("submitFeedbackBtn")?.addEventListener("click", async ()=>{ await handleSubmit(); });
     async function handleSubmit(){ const name=document.getElementById("empName").value.trim(), email=document.getElementById("empEmail").value.trim(), location=document.getElementById("empLocation").value, department=getSelectedDepartment(), category=document.getElementById("feedbackCategory").value, topicTitle=document.getElementById("topicTitle").value.trim(), desc=document.getElementById("feedbackDesc").value.trim(); if(!name||!email||!desc||!topicTitle){ alert("Fill all fields"); return; } const userDetails={name,email,location,department}; const existing=findMatchingTopicByTitle(email,topicTitle); if(existing){ const yes=await customConfirm(`Existing topic "${existing.topicTitle}" (${existing.ref}). Add item?`); if(yes){ const res=addItemToTopic(existing.ref,desc,email); if(res.success){ await saveData(true); await sendNotifications(res.topic,desc,false); alert(`Added to ${existing.ref}`); document.getElementById("feedbackDesc").value=""; document.getElementById("topicTitle").value=""; if(currentUserEmail===email) renderUserTopicsByEmail(email,currentUserStatusFilter,currentSearchTerm); if(managerLoggedIn) renderManagerDashboardEnhanced(); return; }else{alert("Failed"); return;} } } const newTopic=createNewTopic(userDetails,category,topicTitle,desc); await saveData(true); await sendNotifications(newTopic,desc,true); alert(`✅ Submitted! Ref: ${newTopic.ref}`); document.getElementById("feedbackDesc").value=""; document.getElementById("topicTitle").value=""; if(currentUserEmail===email) renderUserTopicsByEmail(email,currentUserStatusFilter,currentSearchTerm); if(managerLoggedIn) renderManagerDashboardEnhanced(); }
-    window.addEventListener('DOMContentLoaded', async () => { await loadData(); updateTokenUI(); document.getElementById("searchTopicsBtn")?.addEventListener("click", () => { if(currentUserEmail) { const term = document.getElementById("searchTopicsInput").value.trim(); renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, term); } else alert("Please verify email first."); }); document.getElementById("resetSearchBtn")?.addEventListener("click", () => { document.getElementById("searchTopicsInput").value = ""; if(currentUserEmail) renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, ""); }); document.getElementById("refreshManagerBtn")?.addEventListener("click", async () => { if(managerLoggedIn){ await loadData(true); renderManagerDashboardEnhanced(); } }); document.getElementById("changeAdminPasswordBtn")?.addEventListener("click", changeAdminPassword); document.querySelectorAll(".user-status-btn").forEach(btn => { btn.addEventListener("click", () => { document.querySelectorAll(".user-status-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); if(currentUserEmail) renderUserTopicsByEmail(currentUserEmail, btn.getAttribute("data-ustatus"), currentSearchTerm); }); }); document.querySelectorAll(".filter-btn").forEach(btn => { btn.addEventListener("click", () => { document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); currentManagerFilter = btn.getAttribute("data-filter"); if(managerLoggedIn) renderManagerDashboardEnhanced(); }); }); const storedVerified = localStorage.getItem("verifiedEmail"); const storedTime = parseInt(localStorage.getItem("verifiedTimestamp") || "0"); if (storedVerified && (Date.now() - storedTime) < 24*60*60*1000 && storedVerified !== ADMIN_EMAIL) { activeRole = "user"; managerLoggedIn = false; currentUserEmail = storedVerified; const welcomeDiv = document.getElementById("roleSelection"); if (welcomeDiv) welcomeDiv.remove(); document.getElementById("userSection").classList.remove("hidden"); document.getElementById("managerDashboard").classList.add("hidden"); setupLogoutButton(); renderUserTopicsByEmail(currentUserEmail, "all", ""); } else { document.getElementById("roleSelection").classList.remove("hidden"); document.getElementById("userSection").classList.add("hidden"); document.getElementById("managerDashboard").classList.add("hidden"); } document.getElementById("empDept")?.dispatchEvent(new Event('change')); });
+    window.addEventListener('DOMContentLoaded', async () => { 
+        await loadData(); 
+        updateTokenUI(); 
+        document.getElementById("searchTopicsBtn")?.addEventListener("click", () => { if(currentUserEmail) { const term = document.getElementById("searchTopicsInput").value.trim(); renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, term); } else alert("Please verify email first."); }); 
+        document.getElementById("resetSearchBtn")?.addEventListener("click", () => { document.getElementById("searchTopicsInput").value = ""; if(currentUserEmail) renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, ""); }); 
+        document.getElementById("refreshManagerBtn")?.addEventListener("click", async () => { if(managerLoggedIn){ await loadData(true); renderManagerDashboardEnhanced(); } }); 
+        document.getElementById("changeAdminPasswordBtn")?.addEventListener("click", changeAdminPassword); 
+        document.querySelectorAll(".user-status-btn").forEach(btn => { btn.addEventListener("click", () => { document.querySelectorAll(".user-status-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); if(currentUserEmail) renderUserTopicsByEmail(currentUserEmail, btn.getAttribute("data-ustatus"), currentSearchTerm); }); }); 
+        document.querySelectorAll(".filter-btn").forEach(btn => { btn.addEventListener("click", () => { document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); currentManagerFilter = btn.getAttribute("data-filter"); if(managerLoggedIn) renderManagerDashboardEnhanced(); }); }); 
+        const storedVerified = localStorage.getItem("verifiedEmail"); 
+        const storedTime = parseInt(localStorage.getItem("verifiedTimestamp") || "0"); 
+        if (storedVerified && (Date.now() - storedTime) < 24*60*60*1000 && storedVerified !== ADMIN_EMAIL) { 
+            activeRole = "user"; managerLoggedIn = false; currentUserEmail = storedVerified; 
+            const welcomeDiv = document.getElementById("roleSelection"); 
+            if (welcomeDiv) welcomeDiv.remove(); 
+            document.getElementById("userSection").classList.remove("hidden"); 
+            document.getElementById("managerDashboard").classList.add("hidden"); 
+            setupLogoutButton(); 
+            renderUserTopicsByEmail(currentUserEmail, "all", ""); 
+        } else { 
+            document.getElementById("roleSelection").classList.remove("hidden"); 
+            document.getElementById("userSection").classList.add("hidden"); 
+            document.getElementById("managerDashboard").classList.add("hidden"); 
+        } 
+        document.getElementById("empDept")?.dispatchEvent(new Event('change')); 
+    });
 </script>
 </body>
 </html>
