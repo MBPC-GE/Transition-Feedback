@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Transition Feedback Portal | Multi‑Device Cloud Sync</title>
+    <title>Transition Portal | Cloud-Sync (Shared Gist)</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; }
         body { background: #f0f4f9; padding: 24px 20px; }
@@ -47,12 +47,12 @@
         .modal-card { background: white; border-radius: 48px; padding: 2rem; width: 420px; max-width: 90%; text-align: center; }
         .modal-card input, .modal-card select { width: 100%; margin: 12px 0; padding: 12px; border-radius: 30px; }
         .welcome-hero { min-height: 80vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #eef2f9 0%, #d9e4f0 100%); border-radius: 48px; padding: 2rem; position: relative; overflow: hidden; }
-        .welcome-card { background: rgba(255,255,255,0.94); backdrop-filter: blur(12px); border-radius: 64px; padding: 2rem; max-width: 550px; width: 100%; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .welcome-card { background: rgba(255,255,255,0.94); backdrop-filter: blur(12px); border-radius: 64px; padding: 2rem; max-width: 600px; width: 100%; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
         .action-buttons { display: flex; gap: 16px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
         .token-config-panel { background: #f8fafc; border-radius: 48px; padding: 1.2rem; margin-top: 1.5rem; text-align: left; border: 1px solid #e2edf2; }
         .search-box { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
         .sync-status { font-size: 0.7rem; background: #eef2ff; border-radius: 40px; padding: 4px 12px; display: inline-block; }
-        .warning-badge { background: #fff3e3; color: #b45f06; border-radius: 40px; padding: 4px 12px; font-size: 0.7rem; }
+        .cloud-panel { background: #eef2ff; border-radius: 24px; padding: 12px; margin-top: 16px; font-size: 0.75rem; }
         @media (max-width: 720px) { .card { padding: 1.2rem; } }
     </style>
 </head>
@@ -66,9 +66,9 @@
     <!-- WELCOME SCREEN -->
     <div id="roleSelection" class="welcome-hero">
         <div class="welcome-card">
-            <div class="welcome-icon">🔐✨</div>
-            <h2 class="welcome-title">Transition Hub</h2>
-            <p>Secure feedback portal with cross‑device cloud sync</p>
+            <div class="welcome-icon">☁️🔐</div>
+            <h2 class="welcome-title">Shared Cloud Portal</h2>
+            <p>All data stored in a shared GitHub Gist – accessible from any device.<br>Use the same token + Gist ID across all users and admin.</p>
             <div id="tokenStatusArea" style="margin-bottom: 16px; font-size: 0.8rem;">⚙️ Checking configuration...</div>
             <div class="action-buttons">
                 <button id="firstTimeSetupBtn" class="setup-btn">🔧 First Time Setup</button>
@@ -80,12 +80,22 @@
             <div id="tokenConfigPanel" class="token-config-panel hidden">
                 <label>🔑 GitHub Personal Access Token (requires 'gist' scope)</label>
                 <input type="password" id="githubTokenInput" placeholder="ghp_... or github_pat_...">
-                <label>📁 Gist ID (optional, leave blank to auto‑create/find)</label>
+                <label>📁 Gist ID (optional – leave empty to auto‑create/find)</label>
                 <input type="text" id="gistIdInput" placeholder="Auto-create if empty">
                 <button id="saveTokenBtn" class="primary" style="width:100%;">💾 Save & Enable Cloud Sync</button>
+                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                    <button id="exportConfigBtn" class="outline small" style="flex:1;">📤 Export Config</button>
+                    <button id="importConfigBtn" class="outline small" style="flex:1;">📥 Import Config</button>
+                </div>
                 <button id="cancelTokenBtn" class="outline" style="width:100%; margin-top:8px;">Cancel</button>
             </div>
-            <p style="font-size: 0.65rem; margin-top: 1.5rem;">⚠️ Without GitHub token, data stays on this device only.<br>Use the same token on all devices to share data.</p>
+            <div id="cloudStatusPanel" class="cloud-panel hidden">
+                <strong>☁️ Cloud Status</strong><br>
+                <span id="cloudGistId">—</span><br>
+                <span id="cloudSyncTime">Last sync: never</span><br>
+                <button id="testCloudBtn" class="small outline" style="margin-top:6px;">Test connection</button>
+            </div>
+            <p style="font-size: 0.65rem; margin-top: 1rem;">⚠️ Without a shared GitHub token, each device keeps its own local data. Set up once and share the configuration.</p>
         </div>
     </div>
 
@@ -125,7 +135,7 @@
 
     <!-- MANAGER DASHBOARD -->
     <div id="managerDashboard" class="card hidden">
-        <div class="flex-between"><h2>📊 Admin Dashboard</h2><div><button id="changeAdminPasswordBtn" class="outline">🔑 Change Admin PW</button><button id="refreshManagerBtn" class="primary">⟳ Force Refresh from Cloud</button></div></div>
+        <div class="flex-between"><h2>📊 Admin Dashboard</h2><div><button id="changeAdminPasswordBtn" class="outline">🔑 Change Admin PW</button><button id="refreshManagerBtn" class="primary">⟳ Force Cloud Refresh</button></div></div>
         <div class="stats-grid" id="statsGrid"></div>
         <div class="sort-controls"><button class="sort-btn" data-sort="date-old">📅 Oldest</button><button class="sort-btn" data-sort="date-new">📅 Newest</button><button class="sort-btn" data-sort="priority-high">🔴 High first</button></div>
         <div class="filter-tabs"><div class="filter-btn active" data-filter="all">All Topics</div><div class="filter-btn" data-filter="pending">Pending Items</div><div class="filter-btn" data-filter="resolved">Acknowledged</div></div>
@@ -157,15 +167,15 @@
         return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    // ---------- CLOUD SYNC (GIST) ----------
+    // ---------- CLOUD SYNC (SHARED GIST) ----------
     function getGitHubToken() { return localStorage.getItem("github_token"); }
     function getGistId() { return localStorage.getItem("gist_id"); }
-    function setGitHubConfig(token, gistId) { if(token) localStorage.setItem("github_token", token); if(gistId) localStorage.setItem("gist_id", gistId); }
+    function setGitHubConfig(token, gistId) { if(token) localStorage.setItem("github_token", token); if(gistId) localStorage.setItem("gist_id", gistId); updateCloudStatusUI(); }
     function hasValidToken() { let t = getGitHubToken(); return t && t.length > 10; }
 
     async function createNewGist() {
         const token = getGitHubToken();
-        const payload = { description: "Transition Feedback Portal - Cross-device Data", public: false, files: { "feedback-data.json": { content: JSON.stringify({ topics: [], users: [], adminPassword: DEFAULT_ADMIN_PASSWORD }, null, 2) } } };
+        const payload = { description: "Transition Portal - Shared Data", public: false, files: { "feedback-data.json": { content: JSON.stringify({ topics: [], users: [], adminPassword: DEFAULT_ADMIN_PASSWORD }, null, 2) } } };
         const res = await fetch("https://api.github.com/gists", { method: "POST", headers: { "Authorization": `Bearer ${token}`, "Accept": "application/vnd.github+json" }, body: JSON.stringify(payload) });
         if (!res.ok) throw new Error("Gist creation failed");
         const gist = await res.json();
@@ -180,13 +190,13 @@
         if (!gistId) gistId = await createNewGist();
         return gistId;
     }
-    // Load from cloud (overwrites local arrays)
     async function fetchFullData() {
         if (!hasValidToken()) {
             const local = localStorage.getItem("feedback_full");
             if (local) { const p = JSON.parse(local); allTopics = p.topics || []; users = p.users || []; }
             else { allTopics = []; users = []; }
-            updateSyncStatus("💾 Local storage only - cloud not configured");
+            updateSyncStatus("💾 Local only – no GitHub token");
+            updateCloudStatusUI();
             return;
         }
         try {
@@ -200,50 +210,71 @@
                 allTopics = parsed.topics || [];
                 users = parsed.users || [];
                 if (parsed.adminPassword) localStorage.setItem("admin_password", parsed.adminPassword);
-                updateSyncStatus("☁️ Cloud sync active - data from GitHub");
-                addToLog(`✅ Loaded ${allTopics.length} topics, ${users.length} users from cloud`, false);
+                updateSyncStatus(`☁️ Cloud (${gistId}) – ${allTopics.length} topics, ${users.length} users`);
+                addToLog(`✅ Loaded from cloud Gist: ${gistId}`, false);
             } else { allTopics = []; users = []; }
+            updateCloudStatusUI(gistId);
         } catch(e) {
             console.warn(e);
             const local = localStorage.getItem("feedback_full");
             if (local) { const p = JSON.parse(local); allTopics = p.topics || []; users = p.users || []; }
-            updateSyncStatus("⚠️ Cloud failed, using local cache");
+            updateSyncStatus(`⚠️ Cloud error: ${e.message} – using local cache`);
             addToLog(`Cloud error: ${e.message}`, true);
         }
     }
-    // Push to cloud (also saves locally)
     async function pushFullData() {
         localStorage.setItem("feedback_full", JSON.stringify({ topics: allTopics, users }));
         const adminPassword = localStorage.getItem("admin_password") || DEFAULT_ADMIN_PASSWORD;
-        if (!hasValidToken()) { addToLog("Saved locally (no GitHub token)", false); return; }
+        if (!hasValidToken()) { addToLog("Saved locally (no GitHub token)", false); updateSyncStatus("💾 Saved locally only"); return; }
         try {
             const gistId = await ensureGistExists();
             await fetch(`https://api.github.com/gists/${gistId}`, { method: "PATCH", headers: { "Authorization": `Bearer ${getGitHubToken()}`, "Content-Type": "application/json" }, body: JSON.stringify({ files: { "feedback-data.json": { content: JSON.stringify({ topics: allTopics, users, adminPassword }, null, 2) } } }) });
-            addToLog("✅ Cloud sync successful", false);
-            updateSyncStatus("☁️ Synced to cloud");
-        } catch(e) { addToLog(`❌ Cloud save failed: ${e.message}`, true); }
+            addToLog("✅ Cloud save successful", false);
+            updateSyncStatus(`☁️ Synced to Gist ${gistId}`);
+            updateCloudStatusUI(gistId);
+        } catch(e) { addToLog(`❌ Cloud save failed: ${e.message}`, true); updateSyncStatus(`❌ Save failed: ${e.message}`); }
     }
     function updateSyncStatus(msg) {
-        const el = document.getElementById("userSyncStatus");
-        if (el) el.textContent = msg;
+        const userEl = document.getElementById("userSyncStatus");
+        if (userEl) userEl.textContent = msg;
         const adminDebug = document.getElementById("adminDebugMsg");
-        if (adminDebug && managerLoggedIn) adminDebug.innerHTML = `🔁 Last cloud fetch: ${new Date().toLocaleTimeString()} - ${msg}`;
-        const welcomeBadge = document.getElementById("userWelcomeBadge");
-        if (welcomeBadge && currentUserEmail) welcomeBadge.innerHTML = hasValidToken() ? "☁️ Cloud enabled" : "💾 Local only";
+        if (adminDebug && managerLoggedIn) adminDebug.innerHTML = `🔁 Last cloud action: ${new Date().toLocaleTimeString()} - ${msg}`;
+    }
+    function updateCloudStatusUI(gistId) {
+        const panel = document.getElementById("cloudStatusPanel");
+        const gistSpan = document.getElementById("cloudGistId");
+        const timeSpan = document.getElementById("cloudSyncTime");
+        if (!panel) return;
+        const token = getGitHubToken();
+        const storedGist = getGistId();
+        if (token && token.length > 10) {
+            panel.classList.remove("hidden");
+            gistSpan.textContent = gistId || storedGist || "(will auto-create)";
+            timeSpan.innerHTML = `Last cloud sync: ${new Date().toLocaleTimeString()}`;
+        } else {
+            panel.classList.add("hidden");
+        }
+    }
+    async function testCloudConnection() {
+        if (!hasValidToken()) { alert("No GitHub token configured."); return; }
+        try {
+            await fetchFullData();
+            alert(`Cloud connection OK. Gist ID: ${getGistId() || "auto-created"}\nTopics: ${allTopics.length}\nUsers: ${users.length}`);
+        } catch(e) { alert(`Connection failed: ${e.message}`); }
     }
 
-    // ---------- USER AUTH (now fully cloud-aware) ----------
+    // ---------- USER AUTH (cloud-backed) ----------
     async function signupUser(email, name, location, department, password) {
         if (users.find(u => u.email === email)) throw new Error("Email already registered");
         const passwordHash = await hashPassword(password);
         users.push({ email, name: name.trim(), location, department, passwordHash, createdAt: new Date().toISOString() });
-        await pushFullData();  // immediately save to cloud
+        await pushFullData();  // immediate cloud save
         return true;
     }
     async function loginUser(email, password) {
-        await fetchFullData(); // always fresh from cloud before login
+        await fetchFullData(); // always fresh
         const user = users.find(u => u.email === email);
-        if (!user) throw new Error("User not found – try signing up first");
+        if (!user) throw new Error("User not found – please sign up first");
         const hash = await hashPassword(password);
         if (user.passwordHash !== hash) throw new Error("Invalid password");
         return user;
@@ -281,15 +312,15 @@
         else { deptSelect.value = "Other"; document.getElementById("otherDeptContainer").classList.remove("hidden"); document.getElementById("otherDeptInput").value = deptVal; }
         document.getElementById("userWelcomeBadge").innerHTML = `👋 ${userProfile.name} ${hasValidToken() ? "☁️" : "💾"}`;
         setupLogoutButton();
-        await fetchFullData();  // load latest from cloud
+        await fetchFullData();
         renderUserTopics();
         if(pollingInterval) clearInterval(pollingInterval);
-        pollingInterval = setInterval(async () => { if(currentUserEmail) { await fetchFullData(); renderUserTopics(); } }, 10000);
+        pollingInterval = setInterval(async () => { if(currentUserEmail) { await fetchFullData(); renderUserTopics(); } }, 15000);
     }
     async function logoutUser() { if(pollingInterval) clearInterval(pollingInterval); clearSession(); managerLoggedIn = false; currentUserEmail = null; document.getElementById("userSection").classList.add("hidden"); document.getElementById("managerDashboard").classList.add("hidden"); document.getElementById("roleSelection").classList.remove("hidden"); location.reload(); }
     function setupLogoutButton() { document.getElementById("logoutContainer").innerHTML = `<button id="globalLogoutBtn" class="outline logout-btn">🚪 Logout</button>`; document.getElementById("globalLogoutBtn").addEventListener("click", logoutUser); }
 
-    // ---------- FEEDBACK HELPERS ----------
+    // ---------- FEEDBACK CORE ----------
     function capitalizeWords(str) { return str.replace(/\b\w/g, c => c.toUpperCase()); }
     function generateRef() { return "REF-" + Math.random().toString(36).substring(2, 8).toUpperCase(); }
     function createNewTopic(user, category, topicTitle, desc, priority) {
@@ -354,10 +385,10 @@
         document.querySelectorAll('.addFollowUpBtn').forEach(btn=>btn.addEventListener('click', async (e)=>{ const ref=e.target.getAttribute('data-topic-ref'); const id=parseInt(e.target.getAttribute('data-item-id')); const txt=prompt("Follow up:"); if(txt && addFollowUpToItem(ref, id, txt, currentUserEmail, false)){ await pushFullData(); renderUserTopics(); alert("Follow up added"); } }));
     }
 
-    // ---------- ADMIN DASHBOARD (always fresh from cloud) ----------
+    // ---------- ADMIN DASHBOARD ----------
     async function renderManagerDashboard() {
         if(!managerLoggedIn) return;
-        await fetchFullData(); // force cloud fetch
+        await fetchFullData();
         const stats = { totalTopics:allTopics.length, totalItems:allTopics.reduce((s,t)=>s+t.issues.length,0), pendingItems:allTopics.reduce((s,t)=>s+t.issues.filter(i=>!i.acknowledged).length,0), ackItems:allTopics.reduce((s,t)=>s+t.issues.filter(i=>i.acknowledged).length,0) };
         document.getElementById("statsGrid").innerHTML = `<div class="stat-card"><div class="stat-number">${stats.totalTopics}</div><div class="stat-label">Topics</div></div><div class="stat-card"><div class="stat-number">${stats.totalItems}</div><div class="stat-label">Items</div></div><div class="stat-card"><div class="stat-number" style="color:#c96f0e;">${stats.pendingItems}</div><div class="stat-label">Pending</div></div><div class="stat-card"><div class="stat-number" style="color:#2c7a4d;">${stats.ackItems}</div><div class="stat-label">Acknowledged</div></div>`;
         let filtered = [...allTopics];
@@ -392,10 +423,10 @@
             document.getElementById("managerDashboard").classList.remove("hidden");
             document.getElementById("userSection").classList.add("hidden");
             setupLogoutButton();
-            await fetchFullData();  // load everything
+            await fetchFullData();
             await renderManagerDashboard();
             if(pollingInterval) clearInterval(pollingInterval);
-            pollingInterval = setInterval(async()=>{ if(managerLoggedIn){ await fetchFullData(); await renderManagerDashboard(); } }, 8000);
+            pollingInterval = setInterval(async()=>{ if(managerLoggedIn){ await fetchFullData(); await renderManagerDashboard(); } }, 10000);
         } else alert("Wrong password");
     }
 
@@ -405,7 +436,7 @@
         const email = document.getElementById("empEmail").value.trim();
         const location = document.getElementById("empLocation").value;
         let dept = document.getElementById("empDept").value;
-        if(dept === "Other") dept = document.getElementById("otherDeptInput").value.trim() || "Other (unspecified)";
+        if(dept === "Other") dept = document.getElementById("otherDeptInput").value.trim() || "Other";
         const category = document.getElementById("feedbackCategory").value;
         const topicTitle = document.getElementById("topicTitle").value.trim();
         const desc = document.getElementById("feedbackDesc").value.trim();
@@ -413,7 +444,7 @@
         if(!name || !email || !desc || !topicTitle){ alert("Fill all fields"); return; }
         const userDetails = { name: capitalizeWords(name), email, location, department: dept };
         const newTopic = createNewTopic(userDetails, category, topicTitle, desc, priority);
-        await pushFullData();  // save to cloud immediately
+        await pushFullData();
         await sendNotifications(newTopic, desc, true);
         alert(`✅ Submitted! Ref: ${newTopic.ref}`);
         document.getElementById("feedbackDesc").value = "";
@@ -427,8 +458,43 @@
         const statusSpan = document.getElementById("tokenStatusArea");
         const firstBtn = document.getElementById("firstTimeSetupBtn");
         const updateBtn = document.getElementById("updateConfigBtn");
-        if(tokenSet){ statusSpan.innerHTML="✅ Cloud sync active (GitHub token configured) – data shared across devices"; if(firstBtn) firstBtn.classList.add("hidden"); if(updateBtn) updateBtn.classList.remove("hidden"); }
-        else { statusSpan.innerHTML="⚠️ No cloud token – data is local only! Set up token to sync across devices."; if(firstBtn) firstBtn.classList.remove("hidden"); if(updateBtn) updateBtn.classList.add("hidden"); }
+        if(tokenSet){ statusSpan.innerHTML="✅ Cloud sync active (shared Gist) – data is cross‑device"; if(firstBtn) firstBtn.classList.add("hidden"); if(updateBtn) updateBtn.classList.remove("hidden"); }
+        else { statusSpan.innerHTML="⚠️ No cloud token – data is local only! Set up a shared token to sync across devices."; if(firstBtn) firstBtn.classList.remove("hidden"); if(updateBtn) updateBtn.classList.add("hidden"); }
+    }
+    function exportConfig() {
+        const token = getGitHubToken();
+        const gistId = getGistId();
+        if (!token) { alert("No cloud configuration to export."); return; }
+        const config = { token, gistId };
+        const blob = new Blob([JSON.stringify(config, null, 2)], {type: "application/json"});
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "portal-cloud-config.json";
+        a.click();
+        URL.revokeObjectURL(a.href);
+        addToLog("📤 Configuration exported", false);
+    }
+    function importConfig() {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/json";
+        input.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const text = await file.text();
+            try {
+                const config = JSON.parse(text);
+                if (config.token) {
+                    setGitHubConfig(config.token, config.gistId || "");
+                    await ensureGistExists();
+                    updateTokenUI();
+                    await fetchFullData();
+                    alert("Configuration imported! Cloud sync active.");
+                    addToLog("📥 Configuration imported", false);
+                } else throw new Error("Invalid config file");
+            } catch(err) { alert("Invalid config file"); }
+        };
+        input.click();
     }
     function escapeHtml(str){ return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; return '&gt;';}); }
 
@@ -439,8 +505,11 @@
         if (session && session.email !== ADMIN_EMAIL) { await enterUserDashboard(session); }
         document.getElementById("firstTimeSetupBtn")?.addEventListener("click", ()=>document.getElementById("tokenConfigPanel").classList.remove("hidden"));
         document.getElementById("updateConfigBtn")?.addEventListener("click", ()=>document.getElementById("tokenConfigPanel").classList.remove("hidden"));
-        document.getElementById("saveTokenBtn")?.addEventListener("click", async()=>{ const token=document.getElementById("githubTokenInput").value.trim(); const gist=document.getElementById("gistIdInput").value.trim(); if(token){ setGitHubConfig(token,gist||null); if(!gist) localStorage.removeItem("gist_id"); await ensureGistExists(); updateTokenUI(); document.getElementById("tokenConfigPanel").classList.add("hidden"); alert("Token saved! Cloud sync ready. Now all data will be shared across devices using this token."); await fetchFullData(); if(managerLoggedIn) renderManagerDashboard(); } });
+        document.getElementById("saveTokenBtn")?.addEventListener("click", async()=>{ const token=document.getElementById("githubTokenInput").value.trim(); const gist=document.getElementById("gistIdInput").value.trim(); if(token){ setGitHubConfig(token,gist||null); if(!gist) localStorage.removeItem("gist_id"); await ensureGistExists(); updateTokenUI(); document.getElementById("tokenConfigPanel").classList.add("hidden"); alert("Cloud configuration saved! Now every user and admin will share the same data."); await fetchFullData(); if(managerLoggedIn) renderManagerDashboard(); } });
         document.getElementById("cancelTokenBtn")?.addEventListener("click", ()=>document.getElementById("tokenConfigPanel").classList.add("hidden"));
+        document.getElementById("exportConfigBtn")?.addEventListener("click", exportConfig);
+        document.getElementById("importConfigBtn")?.addEventListener("click", importConfig);
+        document.getElementById("testCloudBtn")?.addEventListener("click", testCloudConnection);
         document.getElementById("loginBtn")?.addEventListener("click", showLoginModal);
         document.getElementById("signupBtn")?.addEventListener("click", showSignupModal);
         document.getElementById("adminLoginBtn")?.addEventListener("click", adminLoginFlow);
