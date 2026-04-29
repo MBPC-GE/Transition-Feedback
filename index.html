@@ -23,7 +23,6 @@
         button.secondary { background: #3a5468; }
         button.outline { background: transparent; border: 1px solid #b9cfdf; color: #1f5e7a; }
         button.small { padding: 6px 16px; font-size: 0.75rem; }
-        button.danger { background: #b91c1c; }
         .alert { background: #fef9e3; border-left: 5px solid #e6b12e; padding: 14px 18px; border-radius: 24px; margin: 1rem 0; }
         .topic-item { background: #ffffff; border-radius: 24px; padding: 1.2rem; margin-bottom: 1rem; border: 1px solid #e2edf2; }
         .ref-badge { background: #e9f2f5; color: #155f7c; padding: 5px 14px; border-radius: 40px; font-family: monospace; font-weight: bold; font-size: 0.8rem; }
@@ -51,15 +50,14 @@
         .welcome-card { background: rgba(255,255,255,0.94); backdrop-filter: blur(12px); border-radius: 64px; padding: 2rem; max-width: 550px; width: 100%; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
         .action-buttons { display: flex; gap: 16px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
         .token-config-panel { background: #f8fafc; border-radius: 48px; padding: 1.2rem; margin-top: 1.5rem; text-align: left; border: 1px solid #e2edf2; }
-        @media (max-width: 720px) { .card { padding: 1.2rem; } }
         .search-box { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
-        .inline-response-editor { background: #f9fbfd; border-radius: 20px; padding: 12px; margin-top: 10px; }
-        .user-badge { background: #eef2ff; border-radius: 40px; padding: 5px 16px; font-size: 0.8rem; font-weight: 500; }
+        .sync-status { font-size: 0.7rem; background: #eef2ff; border-radius: 40px; padding: 4px 12px; display: inline-block; }
+        @media (max-width: 720px) { .card { padding: 1.2rem; } }
     </style>
 </head>
 <body>
 <div class="container" id="appContainer">
-    <div class="flex-between" style="margin-bottom: 1rem;" id="headerArea">
+    <div class="flex-between" style="margin-bottom: 1rem;">
         <h1>📋 Transition Feedback Portal</h1>
         <div id="logoutContainer"></div>
     </div>
@@ -86,33 +84,33 @@
                 <button id="saveTokenBtn" class="primary" style="width:100%;">💾 Save & Enable Sync</button>
                 <button id="cancelTokenBtn" class="outline" style="width:100%; margin-top:8px;">Cancel</button>
             </div>
-            <p style="font-size: 0.65rem; margin-top: 1.5rem;">Credentials stored encrypted locally & cloud synced</p>
+            <p style="font-size: 0.65rem; margin-top: 1.5rem;">Credentials stored locally. Cloud sync requires GitHub token.</p>
         </div>
     </div>
 
     <!-- USER SECTION -->
     <div id="userSection" class="hidden">
         <div class="card">
-            <div class="flex-between"><h2>✍️ Submit feedback</h2><span id="userWelcomeBadge" class="user-badge"></span></div>
+            <div class="flex-between"><h2>✍️ Submit feedback</h2><span id="userWelcomeBadge" class="user-badge" style="background:#eef2ff; padding:5px 15px; border-radius:30px;"></span></div>
             <div class="form-row">
                 <div class="form-group"><label>Full Name *</label><input type="text" id="empName" placeholder="Full name"></div>
                 <div class="form-group"><label>Email *</label><input type="email" id="empEmail" readonly style="background:#f4f7fb;"></div>
-                <div class="form-group"><label>Location *</label><select id="empLocation"><option value="Deira">Deira</option><option value="Sharjah">Sharjah</option><option value="RAK">RAK</option><option value="Fujairah">Fujairah</option><option value="Brand Center">Brand Center</option><option value="SZR">SZR</option><option value="JAFZA">JAFZA</option><option value="Al Quoz">Al Quoz</option></select></div>
-                <div class="form-group"><label>Department *</label><select id="empDept"><option value="Sales">Sales</option><option value="Aftersales">Aftersales</option><option value="CVM">CVM</option><option value="Operations">Operations</option><option value="Finance">Finance</option><option value="IT">IT</option><option value="HR">HR</option><option value="Other">Other</option></select>
+                <div class="form-group"><label>Location *</label><select id="empLocation"><option>Deira</option><option>Sharjah</option><option>RAK</option><option>Fujairah</option><option>Brand Center</option><option>SZR</option><option>JAFZA</option><option>Al Quoz</option></select></div>
+                <div class="form-group"><label>Department *</label><select id="empDept"><option>Sales</option><option>Aftersales</option><option>CVM</option><option>Operations</option><option>Finance</option><option>IT</option><option>HR</option><option>Other</option></select>
                 <div id="otherDeptContainer" class="hidden"><input type="text" id="otherDeptInput" placeholder="Specify department"></div></div>
             </div>
             <div class="form-row">
                 <div class="form-group full-width"><label>Topic / Subject *</label><input type="text" id="topicTitle" placeholder="e.g., ERP migration delays"></div>
                 <div class="form-group"><label>Priority *</label><select id="feedbackPriority"><option>Low</option><option selected>Medium</option><option>High</option></select></div>
             </div>
-            <div class="form-row"><div class="form-group full-width"><label>Category *</label><select id="feedbackCategory"><option value="Clarification">Clarification</option><option value="Risk / Escalation">Risk / Escalation</option><option value="Operations">Operations</option><option value="General Feedback">General Feedback</option></select></div></div>
+            <div class="form-row"><div class="form-group full-width"><label>Category *</label><select id="feedbackCategory"><option>Clarification</option><option>Risk / Escalation</option><option>Operations</option><option>General Feedback</option></select></div></div>
             <div class="form-row"><div class="form-group full-width"><label>Description *</label><textarea id="feedbackDesc" rows="3" placeholder="Detailed feedback..."></textarea></div></div>
             <div class="flex-between"><button id="submitFeedbackBtn" class="primary">📨 Submit feedback</button><button id="changeUserPasswordBtn" class="outline small">🔒 Change password</button></div>
             <div id="userMessageArea" class="alert hidden"></div>
         </div>
 
         <div class="card">
-            <div class="flex-between"><h2>🔍 My Feedback</h2></div>
+            <div class="flex-between"><h2>🔍 My Feedback</h2><div class="sync-status" id="userSyncStatus">☁️ Syncing...</div></div>
             <div class="search-box"><input type="text" id="searchTopicsInput" placeholder="Search by topic or ref..."><button id="searchTopicsBtn" class="secondary">🔎 Filter</button><button id="resetSearchBtn" class="outline">Reset</button></div>
             <div class="sort-controls" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
                 <button class="sort-btn" data-sort="date-old">📅 Oldest</button><button class="sort-btn" data-sort="date-new">📅 Newest</button>
@@ -126,21 +124,22 @@
 
     <!-- MANAGER DASHBOARD -->
     <div id="managerDashboard" class="card hidden">
-        <div class="flex-between"><h2>📊 Admin Dashboard</h2><div><button id="changeAdminPasswordBtn" class="outline">🔑 Change Admin PW</button><button id="refreshManagerBtn" class="outline">⟳ Refresh</button></div></div>
+        <div class="flex-between"><h2>📊 Admin Dashboard</h2><div><button id="changeAdminPasswordBtn" class="outline">🔑 Change Admin PW</button><button id="refreshManagerBtn" class="primary">⟳ Force Refresh</button></div></div>
         <div class="stats-grid" id="statsGrid"></div>
         <div class="sort-controls"><button class="sort-btn" data-sort="date-old">📅 Oldest</button><button class="sort-btn" data-sort="date-new">📅 Newest</button><button class="sort-btn" data-sort="priority-high">🔴 High first</button></div>
-        <div class="filter-tabs"><div class="filter-btn active" data-filter="all">All</div><div class="filter-btn" data-filter="pending">Pending</div><div class="filter-btn" data-filter="resolved">Acknowledged</div></div>
+        <div class="filter-tabs"><div class="filter-btn active" data-filter="all">All Topics</div><div class="filter-btn" data-filter="pending">Pending Items</div><div class="filter-btn" data-filter="resolved">Acknowledged</div></div>
         <div id="managerTopicsList" style="max-height: 65vh; overflow-y: auto;"></div>
+        <div class="alert" id="adminDebugMsg" style="margin-top:12px; font-size:0.75rem;"></div>
     </div>
 </div>
 
 <script>
-    // ---------- GLOBALS ----------
+    // ---------- CONFIG ----------
     const WEB3FORMS_ACCESS_KEY = "5866f22e-149f-4545-bb8e-84bd2a2d9e86";
     const ADMIN_EMAIL = "remaz.abdallah@gargash.ae";
     const DEFAULT_ADMIN_PASSWORD = "admin123";
     let allTopics = [];
-    let users = [];            // { email, name, location, department, passwordHash }
+    let users = [];
     let currentManagerFilter = "all";
     let managerLoggedIn = false;
     let currentUserEmail = null;
@@ -148,15 +147,13 @@
     let currentUserStatusFilter = "all";
     let currentSearchTerm = "";
     let pollingInterval = null;
-    let lastDataChecksum = "";
 
-    // ---------- CRYPTO HELPERS ----------
+    // ---------- CRYPTO ----------
     async function hashPassword(password) {
         const encoder = new TextEncoder();
         const data = encoder.encode(password);
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
     // ---------- CLOUD SYNC (GIST) ----------
@@ -167,7 +164,7 @@
 
     async function createNewGist() {
         const token = getGitHubToken();
-        const payload = { description: "Transition Feedback Portal Data", public: false, files: { "feedback-data.json": { content: JSON.stringify({ topics: [], users: [], adminPassword: DEFAULT_ADMIN_PASSWORD }, null, 2) } } };
+        const payload = { description: "Transition Feedback Portal", public: false, files: { "feedback-data.json": { content: JSON.stringify({ topics: [], users: [], adminPassword: DEFAULT_ADMIN_PASSWORD }, null, 2) } } };
         const res = await fetch("https://api.github.com/gists", { method: "POST", headers: { "Authorization": `Bearer ${token}`, "Accept": "application/vnd.github+json" }, body: JSON.stringify(payload) });
         if (!res.ok) throw new Error("Gist creation failed");
         const gist = await res.json();
@@ -176,16 +173,24 @@
     }
     async function ensureGistExists() {
         let gistId = getGistId();
-        if (gistId) { try { const check = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { "Authorization": `Bearer ${getGitHubToken()}` } }); if (!check.ok) gistId = null; } catch(e) { gistId = null; } }
+        if (gistId) {
+            try { const check = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { "Authorization": `Bearer ${getGitHubToken()}` } }); if (!check.ok) gistId = null; } catch(e) { gistId = null; }
+        }
         if (!gistId) gistId = await createNewGist();
         return gistId;
     }
     async function fetchFullData() {
-        if (!hasValidToken()) { const local = localStorage.getItem("feedback_full"); if(local) { const p = JSON.parse(local); allTopics = p.topics || []; users = p.users || []; } else { allTopics = []; users = []; } return; }
+        if (!hasValidToken()) {
+            const local = localStorage.getItem("feedback_full");
+            if (local) { const p = JSON.parse(local); allTopics = p.topics || []; users = p.users || []; }
+            else { allTopics = []; users = []; }
+            updateSyncStatus("💾 Local storage only");
+            return;
+        }
         try {
             const gistId = await ensureGistExists();
             const res = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { "Authorization": `Bearer ${getGitHubToken()}` } });
-            if (!res.ok) throw new Error();
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const gist = await res.json();
             const content = gist.files?.["feedback-data.json"]?.content;
             if (content) {
@@ -193,22 +198,36 @@
                 allTopics = parsed.topics || [];
                 users = parsed.users || [];
                 if (parsed.adminPassword) localStorage.setItem("admin_password", parsed.adminPassword);
+                updateSyncStatus("☁️ Cloud sync active");
             } else { allTopics = []; users = []; }
-        } catch(e) { console.warn(e); const local = localStorage.getItem("feedback_full"); if(local) { const p = JSON.parse(local); allTopics = p.topics || []; users = p.users || []; } }
+        } catch(e) {
+            console.warn(e);
+            const local = localStorage.getItem("feedback_full");
+            if (local) { const p = JSON.parse(local); allTopics = p.topics || []; users = p.users || []; }
+            updateSyncStatus("⚠️ Cloud failed, using local");
+            addToLog(`Cloud error: ${e.message}`, true);
+        }
     }
     async function pushFullData() {
         localStorage.setItem("feedback_full", JSON.stringify({ topics: allTopics, users }));
         const adminPassword = localStorage.getItem("admin_password") || DEFAULT_ADMIN_PASSWORD;
-        if (!hasValidToken()) return;
+        if (!hasValidToken()) { addToLog("Saved locally (no GitHub token)", false); return; }
         try {
             const gistId = await ensureGistExists();
             await fetch(`https://api.github.com/gists/${gistId}`, { method: "PATCH", headers: { "Authorization": `Bearer ${getGitHubToken()}`, "Content-Type": "application/json" }, body: JSON.stringify({ files: { "feedback-data.json": { content: JSON.stringify({ topics: allTopics, users, adminPassword }, null, 2) } } }) });
-        } catch(e) { console.error("Sync error", e); }
+            addToLog("✅ Cloud sync successful", false);
+            updateSyncStatus("☁️ Synced to cloud");
+        } catch(e) { addToLog(`❌ Cloud save failed: ${e.message}`, true); }
+    }
+    function updateSyncStatus(msg) {
+        const el = document.getElementById("userSyncStatus");
+        if (el) el.textContent = msg;
+        const adminDebug = document.getElementById("adminDebugMsg");
+        if (adminDebug && managerLoggedIn) adminDebug.innerHTML = `🔁 Last sync: ${new Date().toLocaleTimeString()} - ${msg}`;
     }
 
     // ---------- USER AUTH ----------
     async function signupUser(email, name, location, department, password) {
-        if (!email || !name || !password) throw new Error("All fields required");
         if (users.find(u => u.email === email)) throw new Error("Email already registered");
         const passwordHash = await hashPassword(password);
         users.push({ email, name: name.trim(), location, department, passwordHash, createdAt: new Date().toISOString() });
@@ -236,12 +255,12 @@
     function clearSession() { localStorage.removeItem("session_user"); currentUserEmail = null; }
 
     // ---------- MODALS ----------
-    function showModal(contentHtml, onClose) { const overlay = document.createElement("div"); overlay.className = "modal-overlay"; overlay.innerHTML = `<div class="modal-card">${contentHtml}</div>`; document.body.appendChild(overlay); const closeModal = () => { overlay.remove(); if(onClose) onClose(); }; overlay.querySelector(".modal-card")?.addEventListener("click", e => e.stopPropagation()); overlay.addEventListener("click", closeModal); return overlay; }
+    function showModal(contentHtml, onClose) { const overlay = document.createElement("div"); overlay.className = "modal-overlay"; overlay.innerHTML = `<div class="modal-card">${contentHtml}</div>`; document.body.appendChild(overlay); const closeModal = () => { overlay.remove(); if(onClose) onClose(); }; overlay.addEventListener("click", closeModal); overlay.querySelector(".modal-card")?.addEventListener("click", e => e.stopPropagation()); return overlay; }
     function showSignupModal() { const html = `<h3>📝 Create account</h3><input type="text" id="signupName" placeholder="Full name"><input type="email" id="signupEmail" placeholder="Email"><select id="signupLocation"><option>Deira</option><option>Sharjah</option><option>RAK</option><option>Fujairah</option><option>Brand Center</option><option>SZR</option><option>JAFZA</option><option>Al Quoz</option></select><select id="signupDept"><option>Sales</option><option>Aftersales</option><option>CVM</option><option>Operations</option><option>Finance</option><option>IT</option><option>HR</option><option>Other</option></select><input type="password" id="signupPassword" placeholder="Password"><input type="password" id="signupConfirm" placeholder="Confirm password"><button id="doSignupBtn" class="primary">Sign Up</button><button id="cancelSignupBtn" class="outline">Cancel</button>`; const modal = showModal(html); modal.querySelector("#doSignupBtn").onclick = async () => { const name = modal.querySelector("#signupName").value.trim(); const email = modal.querySelector("#signupEmail").value.trim(); const location = modal.querySelector("#signupLocation").value; let dept = modal.querySelector("#signupDept").value; if(dept === "Other") dept = prompt("Please specify department") || "Other"; const pwd = modal.querySelector("#signupPassword").value; const confirm = modal.querySelector("#signupConfirm").value; if(!name || !email || !pwd) { alert("Fill all fields"); return; } if(pwd !== confirm) { alert("Passwords don't match"); return; } try { await signupUser(email, name, location, dept, pwd); alert("Account created! Please login."); modal.remove(); } catch(e) { alert(e.message); } }; modal.querySelector("#cancelSignupBtn").onclick = () => modal.remove(); }
     function showLoginModal() { const html = `<h3>🔐 Login</h3><input type="email" id="loginEmail" placeholder="Email"><input type="password" id="loginPassword" placeholder="Password"><button id="doLoginBtn" class="primary">Login</button><button id="cancelLoginBtn" class="outline">Cancel</button>`; const modal = showModal(html); modal.querySelector("#doLoginBtn").onclick = async () => { const email = modal.querySelector("#loginEmail").value.trim(); const pwd = modal.querySelector("#loginPassword").value; try { const user = await loginUser(email, pwd); setLoggedInUser(user); await enterUserDashboard(user); modal.remove(); } catch(e) { alert(e.message); } }; modal.querySelector("#cancelLoginBtn").onclick = () => modal.remove(); }
-    function showChangePasswordModal() { const html = `<h3>Change Password</h3><input type="password" id="oldPwd" placeholder="Current password"><input type="password" id="newPwd" placeholder="New password"><input type="password" id="confirmPwd" placeholder="Confirm new"><button id="changePwdConfirm" class="primary">Update</button><button id="cancelChangePwd" class="outline">Cancel</button>`; const modal = showModal(html); modal.querySelector("#changePwdConfirm").onclick = async () => { const oldP = modal.querySelector("#oldPwd").value; const newP = modal.querySelector("#newPwd").value; const conf = modal.querySelector("#confirmPwd").value; if(newP !== conf) { alert("Passwords mismatch"); return; } if(!currentUserEmail) return; try { await changeUserPassword(currentUserEmail, oldP, newP); alert("Password changed successfully. Please login again."); await logoutUser(); modal.remove(); } catch(e) { alert(e.message); } }; modal.querySelector("#cancelChangePwd").onclick = () => modal.remove(); }
+    function showChangePasswordModal() { const html = `<h3>Change Password</h3><input type="password" id="oldPwd" placeholder="Current password"><input type="password" id="newPwd" placeholder="New password"><input type="password" id="confirmPwd" placeholder="Confirm new"><button id="changePwdConfirm" class="primary">Update</button><button id="cancelChangePwd" class="outline">Cancel</button>`; const modal = showModal(html); modal.querySelector("#changePwdConfirm").onclick = async () => { const oldP = modal.querySelector("#oldPwd").value; const newP = modal.querySelector("#newPwd").value; const conf = modal.querySelector("#confirmPwd").value; if(newP !== conf) { alert("Passwords mismatch"); return; } if(!currentUserEmail) return; try { await changeUserPassword(currentUserEmail, oldP, newP); alert("Password changed. Please login again."); await logoutUser(); modal.remove(); } catch(e) { alert(e.message); } }; modal.querySelector("#cancelChangePwd").onclick = () => modal.remove(); }
 
-    // ---------- UI FLOW ----------
+    // ---------- DASHBOARD FLOW ----------
     async function enterUserDashboard(userProfile) {
         currentUserEmail = userProfile.email;
         document.getElementById("roleSelection").classList.add("hidden");
@@ -256,61 +275,91 @@
         document.getElementById("userWelcomeBadge").innerHTML = `👋 ${userProfile.name}`;
         setupLogoutButton();
         await fetchFullData();
-        renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, currentSearchTerm);
+        renderUserTopics();
         if(pollingInterval) clearInterval(pollingInterval);
-        pollingInterval = setInterval(async () => { if(currentUserEmail) { await fetchFullData(); renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, currentSearchTerm); } }, 8000);
+        pollingInterval = setInterval(async () => { if(currentUserEmail) { await fetchFullData(); renderUserTopics(); } }, 8000);
     }
     async function logoutUser() { if(pollingInterval) clearInterval(pollingInterval); clearSession(); managerLoggedIn = false; currentUserEmail = null; document.getElementById("userSection").classList.add("hidden"); document.getElementById("managerDashboard").classList.add("hidden"); document.getElementById("roleSelection").classList.remove("hidden"); location.reload(); }
-    function setupLogoutButton() { const container = document.getElementById("logoutContainer"); container.innerHTML = `<button id="globalLogoutBtn" class="outline logout-btn">🚪 Logout</button>`; document.getElementById("globalLogoutBtn").addEventListener("click", logoutUser); }
+    function setupLogoutButton() { document.getElementById("logoutContainer").innerHTML = `<button id="globalLogoutBtn" class="outline logout-btn">🚪 Logout</button>`; document.getElementById("globalLogoutBtn").addEventListener("click", logoutUser); }
 
-    // ---------- FEEDBACK CORE (unchanged logic) ----------
+    // ---------- FEEDBACK HELPERS ----------
     function capitalizeWords(str) { return str.replace(/\b\w/g, c => c.toUpperCase()); }
     function generateRef() { return "REF-" + Math.random().toString(36).substring(2, 8).toUpperCase(); }
-    function createNewTopic(user, category, topicTitle, desc, priority) { const ref = generateRef(); const newTopic = { ref, userName: user.name, userEmail: user.email, userLocation: user.location, userDepartment: user.department, category, topicTitle: capitalizeWords(topicTitle), createdAt: new Date().toISOString(), issues: [{ itemId: Date.now(), description: desc, date: new Date().toISOString(), acknowledged: false, managerResponse: "", priority, followUps: [] }] }; allTopics.push(newTopic); return newTopic; }
-    function addItemToTopic(ref, itemDesc, userEmail, priority) { const topic = allTopics.find(t => t.ref === ref); if (!topic || topic.userEmail !== userEmail) return false; topic.issues.push({ itemId: Date.now(), description: itemDesc, date: new Date().toISOString(), acknowledged: false, managerResponse: "", priority, followUps: [] }); return true; }
-    function addFollowUpToItem(topicRef, itemId, text, userEmail, isManager = false) { const topic = allTopics.find(t => t.ref === topicRef); if (!topic) return false; const item = topic.issues.find(i => i.itemId === itemId); if (!item) return false; if (!isManager && topic.userEmail !== userEmail) return false; item.followUps = item.followUps || []; item.followUps.push({ text, date: new Date().toISOString(), addedBy: isManager ? "Manager" : userEmail }); return true; }
-    async function sendPortalEmail(subject, body, userEmail, userName) { try { const fd = new FormData(); fd.append("access_key", WEB3FORMS_ACCESS_KEY); fd.append("subject", subject); fd.append("from_name", userName); fd.append("from_email", userEmail); fd.append("message", body); const res = await fetch("https://api.web3forms.com/submit", { method: "POST", body: fd }); const json = await res.json(); if(json.success) addToLog(`📧 ${subject}`); } catch(e) { addToLog(`Email error`, true); } }
-    async function sendNotifications(topic, desc, isNewTopic) { const link = window.location.href; await sendPortalEmail(`Feedback · ${topic.ref} · ${topic.topicTitle}`, `Ref: ${topic.ref}\nUser: ${topic.userName} (${topic.userEmail})\nFeedback: ${desc}\nManage: ${link}`, topic.userEmail, topic.userName); }
+    function createNewTopic(user, category, topicTitle, desc, priority) {
+        const ref = generateRef();
+        const newTopic = { ref, userName: user.name, userEmail: user.email, userLocation: user.location, userDepartment: user.department, category, topicTitle: capitalizeWords(topicTitle), createdAt: new Date().toISOString(), issues: [{ itemId: Date.now(), description: desc, date: new Date().toISOString(), acknowledged: false, managerResponse: "", priority, followUps: [] }] };
+        allTopics.push(newTopic);
+        return newTopic;
+    }
+    function addItemToTopic(ref, itemDesc, userEmail, priority) {
+        const topic = allTopics.find(t => t.ref === ref);
+        if (!topic || topic.userEmail !== userEmail) return false;
+        topic.issues.push({ itemId: Date.now(), description: itemDesc, date: new Date().toISOString(), acknowledged: false, managerResponse: "", priority, followUps: [] });
+        return true;
+    }
+    function addFollowUpToItem(topicRef, itemId, text, userEmail, isManager = false) {
+        const topic = allTopics.find(t => t.ref === topicRef);
+        if (!topic) return false;
+        const item = topic.issues.find(i => i.itemId === itemId);
+        if (!item) return false;
+        if (!isManager && topic.userEmail !== userEmail) return false;
+        item.followUps = item.followUps || [];
+        item.followUps.push({ text, date: new Date().toISOString(), addedBy: isManager ? "Manager" : userEmail });
+        return true;
+    }
+    async function sendPortalEmail(subject, body, userEmail, userName) {
+        try { const fd = new FormData(); fd.append("access_key", WEB3FORMS_ACCESS_KEY); fd.append("subject", subject); fd.append("from_name", userName); fd.append("from_email", userEmail); fd.append("message", body); await fetch("https://api.web3forms.com/submit", { method: "POST", body: fd }); addToLog(`📧 Email sent: ${subject}`); } catch(e) { addToLog(`Email failed`, true); }
+    }
+    async function sendNotifications(topic, desc, isNewTopic) { await sendPortalEmail(`Feedback · ${topic.ref}`, `Ref: ${topic.ref}\nUser: ${topic.userName}\nFeedback: ${desc}`, topic.userEmail, topic.userName); }
     function addToLog(msg, isError=false) { const logDiv = document.getElementById("emailLog"); if(logDiv) { const entry = document.createElement("div"); entry.style.padding="4px 0"; entry.style.borderBottom="1px solid #2c4a5e"; entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`; logDiv.prepend(entry); } }
 
     // ---------- RENDERING (USER) ----------
     function formatDateTime(iso) { return new Date(iso).toLocaleString(); }
     function sortTopics(arr, sort) { return [...arr].sort((a,b) => { if(sort==='date-old') return new Date(a.createdAt)-new Date(b.createdAt); if(sort==='date-new') return new Date(b.createdAt)-new Date(a.createdAt); if(sort==='priority-high') return Math.max(...b.issues.map(i=>({High:2,Medium:1,Low:0}[i.priority]||0))) - Math.max(...a.issues.map(i=>({High:2,Medium:1,Low:0}[i.priority]||0))); if(sort==='priority-low') return Math.min(...a.issues.map(i=>({High:2,Medium:1,Low:0}[i.priority]||0))) - Math.min(...b.issues.map(i=>({High:2,Medium:1,Low:0}[i.priority]||0))); return 0; }); }
     function sortIssues(arr, sort) { return [...arr].sort((a,b) => { if(sort==='date-old') return new Date(a.date)-new Date(b.date); if(sort==='date-new') return new Date(b.date)-new Date(a.date); if(sort==='priority-high') return ({High:2,Medium:1,Low:0}[b.priority]||0)-({High:2,Medium:1,Low:0}[a.priority]||0); if(sort==='priority-low') return ({Low:0,Medium:1,High:2}[a.priority]||0)-({Low:0,Medium:1,High:2}[b.priority]||0); return 0; }); }
-    function renderUserTopicsByEmail(email, filter, search) {
-        currentUserEmail = email; currentUserStatusFilter = filter; currentSearchTerm = search;
-        const container = document.getElementById("myTopicsContainer");
-        let topics = allTopics.filter(t => t.userEmail === email);
-        if(search.trim()) { const s=search.toLowerCase(); topics = topics.filter(t=>t.topicTitle.toLowerCase().includes(s)||t.ref.toLowerCase().includes(s)); }
+    function renderUserTopics() {
+        if(!currentUserEmail) return;
+        let topics = allTopics.filter(t => t.userEmail === currentUserEmail);
+        if(currentSearchTerm.trim()) { const s=currentSearchTerm.toLowerCase(); topics = topics.filter(t=>t.topicTitle.toLowerCase().includes(s)||t.ref.toLowerCase().includes(s)); }
         topics = sortTopics(topics, currentUserSort);
         let html = "";
         for(let topic of topics){
             let items = topic.issues;
-            if(filter === "pending") items = items.filter(i=>!i.acknowledged);
-            if(filter === "resolved") items = items.filter(i=>i.acknowledged);
+            if(currentUserStatusFilter === "pending") items = items.filter(i=>!i.acknowledged);
+            if(currentUserStatusFilter === "resolved") items = items.filter(i=>i.acknowledged);
             items = sortIssues(items, currentUserSort);
             if(items.length===0) continue;
             html+=`<div class="topic-item"><div class="flex-between"><span class="ref-badge">🔖 ${topic.ref}</span><span>📁 ${topic.category}</span></div><div><strong>${escapeHtml(topic.topicTitle)}</strong></div>`;
-            for(let idx=0; idx<items.length; idx++){ const it=items[idx]; const status=it.acknowledged?'status-ack':'status-pending'; const txt=it.acknowledged?'Acknowledged':'Pending';
-                html+=`<div class="item-card" data-item-id="${it.itemId}" data-topic-ref="${topic.ref}"><div class="flex-between"><span>${formatDateTime(it.date)}</span><span class="${status}">${txt}</span><span class="priority-${it.priority?.toLowerCase()}">⚡ ${it.priority}</span></div><p>📝 ${escapeHtml(it.description)}</p>${it.managerResponse?`<div class="manager-response">📌 Response: ${escapeHtml(it.managerResponse)}</div>`:''}`;
+            for(let it of items){
+                const statusClass = it.acknowledged ? 'status-ack' : 'status-pending';
+                const statusText = it.acknowledged ? 'Acknowledged' : 'Pending';
+                html+=`<div class="item-card" data-item-id="${it.itemId}" data-topic-ref="${topic.ref}"><div class="flex-between"><span>${formatDateTime(it.date)}</span><span class="${statusClass}">${statusText}</span><span class="priority-${it.priority?.toLowerCase()}">⚡ ${it.priority}</span></div><p>📝 ${escapeHtml(it.description)}</p>${it.managerResponse?`<div class="manager-response">📌 Response: ${escapeHtml(it.managerResponse)}</div>`:''}`;
                 if(it.followUps?.length){ html+=`<div class="follow-ups-container"><strong>Follow ups:</strong>`; it.followUps.forEach(fu=>{ html+=`<div class="follow-up-item">📎 ${formatDateTime(fu.date)} - ${escapeHtml(fu.text)} <small>(${fu.addedBy})</small></div>`; }); html+=`</div>`; }
                 html+=`<button class="secondary small addFollowUpBtn" data-topic-ref="${topic.ref}" data-item-id="${it.itemId}" style="margin-top:8px;">➕ Add follow up</button></div>`;
             }
             html+=`<button class="secondary addItemSmall" data-ref="${topic.ref}" style="margin-top:12px;">➕ Add new item</button></div>`;
         }
-        if(!html) html = `<div class="alert">📭 No feedback items</div>`;
-        container.innerHTML = html;
-        document.querySelectorAll('.addItemSmall').forEach(btn=>btn.addEventListener('click', async (e)=>{ const ref=e.target.getAttribute('data-ref'); const desc=prompt("Describe new item:"); if(desc) { const prio=prompt("Priority (Low/Medium/High)","Medium"); if(addItemToTopic(ref, desc, currentUserEmail, ["Low","Medium","High"].includes(prio)?prio:"Medium")){ await pushFullData(); renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, currentSearchTerm); alert("Item added"); } } }));
-        document.querySelectorAll('.addFollowUpBtn').forEach(btn=>btn.addEventListener('click', async (e)=>{ const ref=e.target.getAttribute('data-topic-ref'); const id=parseInt(e.target.getAttribute('data-item-id')); const txt=prompt("Follow up:"); if(txt && addFollowUpToItem(ref, id, txt, currentUserEmail, false)){ await pushFullData(); renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, currentSearchTerm); alert("Follow up added"); } }));
+        document.getElementById("myTopicsContainer").innerHTML = html || `<div class="alert">📭 No feedback items found.</div>`;
+        attachUserItemEvents();
+    }
+    function attachUserItemEvents(){
+        document.querySelectorAll('.addItemSmall').forEach(btn=>btn.addEventListener('click', async (e)=>{ const ref=e.target.getAttribute('data-ref'); const desc=prompt("Describe new item:"); if(desc) { const prio=prompt("Priority (Low/Medium/High)","Medium"); if(addItemToTopic(ref, desc, currentUserEmail, ["Low","Medium","High"].includes(prio)?prio:"Medium")){ await pushFullData(); renderUserTopics(); alert("Item added"); } } }));
+        document.querySelectorAll('.addFollowUpBtn').forEach(btn=>btn.addEventListener('click', async (e)=>{ const ref=e.target.getAttribute('data-topic-ref'); const id=parseInt(e.target.getAttribute('data-item-id')); const txt=prompt("Follow up:"); if(txt && addFollowUpToItem(ref, id, txt, currentUserEmail, false)){ await pushFullData(); renderUserTopics(); alert("Follow up added"); } }));
     }
 
-    // ---------- MANAGER DASHBOARD (condensed but full) ----------
-    async function renderManagerDashboard() { if(!managerLoggedIn) return; const stats = { totalTopics:allTopics.length, totalItems:allTopics.reduce((s,t)=>s+t.issues.length,0), pendingItems:allTopics.reduce((s,t)=>s+t.issues.filter(i=>!i.acknowledged).length,0), ackItems:allTopics.reduce((s,t)=>s+t.issues.filter(i=>i.acknowledged).length,0) };
-        document.getElementById("statsGrid").innerHTML = `<div class="stat-card"><div class="stat-number">${stats.totalTopics}</div><div class="stat-label">Topics</div></div><div class="stat-card"><div class="stat-number">${stats.totalItems}</div><div class="stat-label">Items</div></div><div class="stat-card"><div class="stat-number">${stats.pendingItems}</div><div class="stat-label">Pending</div></div><div class="stat-card"><div class="stat-number">${stats.ackItems}</div><div class="stat-label">Acknowledged</div></div>`;
-        let filtered = [...allTopics]; if(currentManagerFilter==="pending") filtered = filtered.filter(t=>t.issues.some(i=>!i.acknowledged)); if(currentManagerFilter==="resolved") filtered = filtered.filter(t=>t.issues.every(i=>i.acknowledged));
+    // ---------- ADMIN DASHBOARD ----------
+    async function renderManagerDashboard() {
+        if(!managerLoggedIn) return;
+        await fetchFullData(); // always fresh
+        const stats = { totalTopics:allTopics.length, totalItems:allTopics.reduce((s,t)=>s+t.issues.length,0), pendingItems:allTopics.reduce((s,t)=>s+t.issues.filter(i=>!i.acknowledged).length,0), ackItems:allTopics.reduce((s,t)=>s+t.issues.filter(i=>i.acknowledged).length,0) };
+        document.getElementById("statsGrid").innerHTML = `<div class="stat-card"><div class="stat-number">${stats.totalTopics}</div><div class="stat-label">Topics</div></div><div class="stat-card"><div class="stat-number">${stats.totalItems}</div><div class="stat-label">Items</div></div><div class="stat-card"><div class="stat-number" style="color:#c96f0e;">${stats.pendingItems}</div><div class="stat-label">Pending</div></div><div class="stat-card"><div class="stat-number" style="color:#2c7a4d;">${stats.ackItems}</div><div class="stat-label">Acknowledged</div></div>`;
+        let filtered = [...allTopics];
+        if(currentManagerFilter === "pending") filtered = filtered.filter(t=>t.issues.some(i=>!i.acknowledged));
+        if(currentManagerFilter === "resolved") filtered = filtered.filter(t=>t.issues.every(i=>i.acknowledged));
         filtered = sortTopics(filtered, currentUserSort);
         let html="";
-        for(let t of filtered){ let issues = sortIssues(t.issues, currentUserSort);
+        for(let t of filtered){
+            let issues = sortIssues(t.issues, currentUserSort);
             html+=`<div class="topic-item"><div class="flex-between"><span class="ref-badge">${t.ref}</span><span>${t.category}</span></div><div><strong>${escapeHtml(t.topicTitle)}</strong> · ${t.userName} (${t.userEmail})</div>`;
             for(let idx=0; idx<issues.length; idx++){ const it=issues[idx]; const origIdx = t.issues.findIndex(i=>i.itemId===it.itemId);
                 html+=`<div id="item-container-${t.ref}-${origIdx}" class="item-card"><div class="flex-between"><span>${formatDateTime(it.date)}</span><span class="${it.acknowledged?'status-ack':'status-pending'}">${it.acknowledged?'Acknowledged':'Pending'}</span><span class="priority-${it.priority?.toLowerCase()}">⚡ ${it.priority}</span></div><p>📝 ${escapeHtml(it.description)}</p>${it.managerResponse?`<div class="manager-response">📌 Response: ${escapeHtml(it.managerResponse)}</div>`:''}`;
@@ -318,13 +367,64 @@
                 html+=`<div class="flex-between" style="margin-top:12px;"><label><input type="checkbox" class="ack-checkbox" data-ref="${t.ref}" data-idx="${origIdx}" ${it.acknowledged?'checked':''}> Acknowledge</label><select class="priority-select" data-ref="${t.ref}" data-idx="${origIdx}"><option ${it.priority==='Low'?'selected':''}>Low</option><option ${it.priority==='Medium'?'selected':''}>Medium</option><option ${it.priority==='High'?'selected':''}>High</option></select><button class="secondary small managerFollowUpBtn" data-topic-ref="${t.ref}" data-item-id="${it.itemId}">➕ Follow up</button>${it.acknowledged?`<button class="edit-response-btn" data-ref="${t.ref}" data-idx="${origIdx}">✏️ Edit response</button>`:''}</div></div>`;
             } html+=`</div>`;
         }
-        document.getElementById("managerTopicsList").innerHTML = html || `<div class="alert">No topics</div>`;
-        attachManagerEvents();
+        document.getElementById("managerTopicsList").innerHTML = html || `<div class="alert">✨ No topics match filter.</div>`;
+        attachAdminEvents();
     }
-    function attachManagerEvents(){ document.querySelectorAll('.ack-checkbox').forEach(c=>c.addEventListener('change', async(e)=>{ const ref=e.target.dataset.ref, idx=parseInt(e.target.dataset.idx), topic=allTopics.find(t=>t.ref===ref); if(topic){ if(e.target.checked && !topic.issues[idx].acknowledged){ topic.issues[idx].acknowledged=true; await pushFullData(); renderManagerDashboard(); } else if(!e.target.checked && topic.issues[idx].acknowledged){ topic.issues[idx].acknowledged=false; topic.issues[idx].managerResponse=""; await pushFullData(); renderManagerDashboard(); } } })); document.querySelectorAll('.priority-select').forEach(s=>s.addEventListener('change', async(e)=>{ const ref=e.target.dataset.ref, idx=e.target.dataset.idx; allTopics.find(t=>t.ref===ref).issues[idx].priority=e.target.value; await pushFullData(); renderManagerDashboard(); })); document.querySelectorAll('.managerFollowUpBtn').forEach(b=>b.addEventListener('click', async(e)=>{ const ref=e.target.dataset.topicRef, id=parseInt(e.target.dataset.itemId), txt=prompt("Manager follow up:"); if(txt && addFollowUpToItem(ref, id, txt, "", true)){ await pushFullData(); renderManagerDashboard(); } })); document.querySelectorAll('.edit-response-btn').forEach(b=>b.addEventListener('click', async(e)=>{ const ref=e.target.dataset.ref, idx=e.target.dataset.idx, topic=allTopics.find(t=>t.ref===ref), newResp=prompt("Edit leadership response:", topic.issues[idx].managerResponse||""); if(newResp!==null){ topic.issues[idx].managerResponse=newResp; await pushFullData(); renderManagerDashboard(); } })); }
-    async function adminLoginFlow() { const email = prompt("Admin email:"); if(email !== ADMIN_EMAIL) return alert("Invalid"); const pwd = prompt("Admin password:"); if(pwd === (localStorage.getItem("admin_password")||DEFAULT_ADMIN_PASSWORD)){ managerLoggedIn=true; document.getElementById("roleSelection").classList.add("hidden"); document.getElementById("managerDashboard").classList.remove("hidden"); document.getElementById("userSection").classList.add("hidden"); setupLogoutButton(); await fetchFullData(); renderManagerDashboard(); if(pollingInterval) clearInterval(pollingInterval); pollingInterval = setInterval(async()=>{ if(managerLoggedIn){ await fetchFullData(); renderManagerDashboard(); } },7000); } else alert("Wrong password"); }
+    function attachAdminEvents(){
+        document.querySelectorAll('.ack-checkbox').forEach(c=>c.addEventListener('change', async(e)=>{ const ref=e.target.dataset.ref, idx=parseInt(e.target.dataset.idx), topic=allTopics.find(t=>t.ref===ref); if(topic){ if(e.target.checked && !topic.issues[idx].acknowledged){ topic.issues[idx].acknowledged=true; await pushFullData(); renderManagerDashboard(); } else if(!e.target.checked && topic.issues[idx].acknowledged){ topic.issues[idx].acknowledged=false; topic.issues[idx].managerResponse=""; await pushFullData(); renderManagerDashboard(); } } }));
+        document.querySelectorAll('.priority-select').forEach(s=>s.addEventListener('change', async(e)=>{ const ref=e.target.dataset.ref, idx=e.target.dataset.idx; allTopics.find(t=>t.ref===ref).issues[idx].priority=e.target.value; await pushFullData(); renderManagerDashboard(); }));
+        document.querySelectorAll('.managerFollowUpBtn').forEach(b=>b.addEventListener('click', async(e)=>{ const ref=e.target.dataset.topicRef, id=parseInt(e.target.dataset.itemId), txt=prompt("Manager follow up:"); if(txt && addFollowUpToItem(ref, id, txt, "", true)){ await pushFullData(); renderManagerDashboard(); } }));
+        document.querySelectorAll('.edit-response-btn').forEach(b=>b.addEventListener('click', async(e)=>{ const ref=e.target.dataset.ref, idx=e.target.dataset.idx, topic=allTopics.find(t=>t.ref===ref), newResp=prompt("Edit leadership response:", topic.issues[idx].managerResponse||""); if(newResp!==null){ topic.issues[idx].managerResponse=newResp; await pushFullData(); renderManagerDashboard(); } }));
+    }
+    async function adminLoginFlow() {
+        const email = prompt("Admin email:"); if(email !== ADMIN_EMAIL) return alert("Invalid email");
+        const pwd = prompt("Admin password:");
+        if(pwd === (localStorage.getItem("admin_password")||DEFAULT_ADMIN_PASSWORD)){
+            managerLoggedIn = true;
+            document.getElementById("roleSelection").classList.add("hidden");
+            document.getElementById("managerDashboard").classList.remove("hidden");
+            document.getElementById("userSection").classList.add("hidden");
+            setupLogoutButton();
+            await fetchFullData();
+            await renderManagerDashboard();
+            if(pollingInterval) clearInterval(pollingInterval);
+            pollingInterval = setInterval(async()=>{ if(managerLoggedIn){ await fetchFullData(); await renderManagerDashboard(); } }, 5000);
+        } else alert("Wrong password");
+    }
+
+    // ---------- SUBMIT HANDLER ----------
+    async function handleSubmitFeedback() {
+        const name = document.getElementById("empName").value.trim();
+        const email = document.getElementById("empEmail").value.trim();
+        const location = document.getElementById("empLocation").value;
+        let dept = document.getElementById("empDept").value;
+        if(dept === "Other") dept = document.getElementById("otherDeptInput").value.trim() || "Other (unspecified)";
+        const category = document.getElementById("feedbackCategory").value;
+        const topicTitle = document.getElementById("topicTitle").value.trim();
+        const desc = document.getElementById("feedbackDesc").value.trim();
+        const priority = document.getElementById("feedbackPriority").value;
+        if(!name || !email || !desc || !topicTitle){ alert("Fill all fields"); return; }
+        const userDetails = { name: capitalizeWords(name), email, location, department: dept };
+        const newTopic = createNewTopic(userDetails, category, topicTitle, desc, priority);
+        await pushFullData();
+        await sendNotifications(newTopic, desc, true);
+        alert(`✅ Submitted! Ref: ${newTopic.ref}`);
+        document.getElementById("feedbackDesc").value = "";
+        document.getElementById("topicTitle").value = "";
+        if(currentUserEmail) renderUserTopics();
+    }
 
     // ---------- INIT & EVENT LISTENERS ----------
+    function updateTokenUI() {
+        const tokenSet = hasValidToken();
+        const statusSpan = document.getElementById("tokenStatusArea");
+        const firstBtn = document.getElementById("firstTimeSetupBtn");
+        const updateBtn = document.getElementById("updateConfigBtn");
+        if(tokenSet){ statusSpan.innerHTML="✅ Cloud sync active (GitHub token configured)"; if(firstBtn) firstBtn.classList.add("hidden"); if(updateBtn) updateBtn.classList.remove("hidden"); }
+        else { statusSpan.innerHTML="⚙️ No cloud token - first time setup required"; if(firstBtn) firstBtn.classList.remove("hidden"); if(updateBtn) updateBtn.classList.add("hidden"); }
+    }
+    function escapeHtml(str){ return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; return '&gt;';}); }
+
     window.addEventListener("DOMContentLoaded", async () => {
         await fetchFullData();
         updateTokenUI();
@@ -332,25 +432,22 @@
         if (session && session.email !== ADMIN_EMAIL) { await enterUserDashboard(session); }
         document.getElementById("firstTimeSetupBtn")?.addEventListener("click", ()=>document.getElementById("tokenConfigPanel").classList.remove("hidden"));
         document.getElementById("updateConfigBtn")?.addEventListener("click", ()=>document.getElementById("tokenConfigPanel").classList.remove("hidden"));
-        document.getElementById("saveTokenBtn")?.addEventListener("click", async()=>{ const token=document.getElementById("githubTokenInput").value.trim(); const gist=document.getElementById("gistIdInput").value.trim(); if(token){ setGitHubConfig(token,gist||null); if(!gist) localStorage.removeItem("gist_id"); await ensureGistExists(); updateTokenUI(); document.getElementById("tokenConfigPanel").classList.add("hidden"); alert("Token saved & Gist ready"); } });
-        document.getElementById("cancelTokenBtn")?.addEventListener("click",()=>document.getElementById("tokenConfigPanel").classList.add("hidden"));
+        document.getElementById("saveTokenBtn")?.addEventListener("click", async()=>{ const token=document.getElementById("githubTokenInput").value.trim(); const gist=document.getElementById("gistIdInput").value.trim(); if(token){ setGitHubConfig(token,gist||null); if(!gist) localStorage.removeItem("gist_id"); await ensureGistExists(); updateTokenUI(); document.getElementById("tokenConfigPanel").classList.add("hidden"); alert("Token saved! Cloud sync ready."); await fetchFullData(); if(managerLoggedIn) renderManagerDashboard(); } });
+        document.getElementById("cancelTokenBtn")?.addEventListener("click", ()=>document.getElementById("tokenConfigPanel").classList.add("hidden"));
         document.getElementById("loginBtn")?.addEventListener("click", showLoginModal);
         document.getElementById("signupBtn")?.addEventListener("click", showSignupModal);
         document.getElementById("adminLoginBtn")?.addEventListener("click", adminLoginFlow);
-        document.getElementById("submitFeedbackBtn")?.addEventListener("click", async()=>{ const name=document.getElementById("empName").value.trim(); const email=document.getElementById("empEmail").value.trim(); const loc=document.getElementById("empLocation").value; let dept=document.getElementById("empDept").value; if(dept==="Other") dept=document.getElementById("otherDeptInput").value.trim()||"Other"; const cat=document.getElementById("feedbackCategory").value; const title=document.getElementById("topicTitle").value.trim(); const desc=document.getElementById("feedbackDesc").value.trim(); const prio=document.getElementById("feedbackPriority").value; if(!name||!email||!desc||!title){ alert("Fill required fields"); return; } const newTopic=createNewTopic({name,email,location:loc,department:dept},cat,title,desc,prio); await pushFullData(); await sendNotifications(newTopic,desc,true); alert(`Submitted Ref: ${newTopic.ref}`); document.getElementById("feedbackDesc").value=""; document.getElementById("topicTitle").value=""; if(currentUserEmail) renderUserTopicsByEmail(currentUserEmail,currentUserStatusFilter,currentSearchTerm); });
+        document.getElementById("submitFeedbackBtn")?.addEventListener("click", handleSubmitFeedback);
         document.getElementById("changeUserPasswordBtn")?.addEventListener("click", showChangePasswordModal);
-        document.getElementById("changeAdminPasswordBtn")?.addEventListener("click", async()=>{ const old=prompt("Current admin password:"); if(old!==(localStorage.getItem("admin_password")||DEFAULT_ADMIN_PASSWORD)){ alert("Wrong"); return; } const newp=prompt("New password:"); if(newp&&newp.length>=4){ localStorage.setItem("admin_password",newp); await pushFullData(); alert("Admin password updated"); } });
-        document.getElementById("refreshManagerBtn")?.addEventListener("click", async()=>{ if(managerLoggedIn){ await fetchFullData(); renderManagerDashboard(); } });
-        document.querySelectorAll(".user-status-btn").forEach(btn=>btn.addEventListener("click",()=>{ document.querySelectorAll(".user-status-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); if(currentUserEmail) renderUserTopicsByEmail(currentUserEmail, btn.getAttribute("data-ustatus"), currentSearchTerm); }));
-        document.querySelectorAll(".sort-btn").forEach(btn=>btn.addEventListener("click",()=>{ const sort=btn.getAttribute("data-sort"); if(managerLoggedIn){ currentUserSort=sort; renderManagerDashboard(); } else if(currentUserEmail){ currentUserSort=sort; renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, currentSearchTerm); } document.querySelectorAll(".sort-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); }));
+        document.getElementById("changeAdminPasswordBtn")?.addEventListener("click", async()=>{ const old=prompt("Current admin password:"); if(old!==(localStorage.getItem("admin_password")||DEFAULT_ADMIN_PASSWORD)){ alert("Wrong"); return; } const newp=prompt("New password (min 4):"); if(newp&&newp.length>=4){ localStorage.setItem("admin_password",newp); await pushFullData(); alert("Admin password updated"); } });
+        document.getElementById("refreshManagerBtn")?.addEventListener("click", async()=>{ if(managerLoggedIn){ await fetchFullData(); await renderManagerDashboard(); addToLog("Manual refresh triggered", false); } });
+        document.querySelectorAll(".user-status-btn").forEach(btn=>btn.addEventListener("click",()=>{ document.querySelectorAll(".user-status-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); currentUserStatusFilter = btn.getAttribute("data-ustatus"); if(currentUserEmail) renderUserTopics(); }));
+        document.querySelectorAll(".sort-btn").forEach(btn=>btn.addEventListener("click",()=>{ const sort=btn.getAttribute("data-sort"); if(managerLoggedIn){ currentUserSort=sort; renderManagerDashboard(); } else if(currentUserEmail){ currentUserSort=sort; renderUserTopics(); } document.querySelectorAll(".sort-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); }));
         document.querySelectorAll(".filter-btn").forEach(btn=>btn.addEventListener("click",()=>{ document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); currentManagerFilter=btn.getAttribute("data-filter"); if(managerLoggedIn) renderManagerDashboard(); }));
-        document.getElementById("searchTopicsBtn")?.addEventListener("click",()=>{ if(currentUserEmail) renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, document.getElementById("searchTopicsInput").value); });
-        document.getElementById("resetSearchBtn")?.addEventListener("click",()=>{ document.getElementById("searchTopicsInput").value=""; if(currentUserEmail) renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, ""); });
+        document.getElementById("searchTopicsBtn")?.addEventListener("click",()=>{ if(currentUserEmail){ currentSearchTerm = document.getElementById("searchTopicsInput").value; renderUserTopics(); } });
+        document.getElementById("resetSearchBtn")?.addEventListener("click",()=>{ document.getElementById("searchTopicsInput").value=""; currentSearchTerm=""; if(currentUserEmail) renderUserTopics(); });
         document.getElementById("empDept")?.addEventListener("change",()=>{ const otherDiv=document.getElementById("otherDeptContainer"); if(document.getElementById("empDept").value==="Other") otherDiv.classList.remove("hidden"); else otherDiv.classList.add("hidden"); });
     });
-    function updateTokenUI(){ const tokenSet=hasValidToken(); const statusSpan=document.getElementById("tokenStatusArea"); const firstBtn=document.getElementById("firstTimeSetupBtn"); const updateBtn=document.getElementById("updateConfigBtn"); if(tokenSet){ statusSpan.innerHTML="✅ Cloud sync active"; if(firstBtn) firstBtn.classList.add("hidden"); if(updateBtn) updateBtn.classList.remove("hidden"); } else { statusSpan.innerHTML="⚙️ No cloud token - First time setup"; if(firstBtn) firstBtn.classList.remove("hidden"); if(updateBtn) updateBtn.classList.add("hidden"); } }
-    function escapeHtml(str){ return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; return '&gt;';}); }
 </script>
 </body>
 </html>
-```
