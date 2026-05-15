@@ -93,7 +93,7 @@
     <!-- USER SECTION -->
     <div id="userSection" class="hidden">
         <div class="card">
-            <div class="flex-between"><h2>✍️ Submit feedback</h2><span id="userWelcomeBadge" class="user-badge"></span></div>
+            <div class="flex-between"><h2>✍️ Submit feedback</h2></div>
             <div class="form-row">
                 <div class="form-group"><label>Full Name *</label><input type="text" id="empName" placeholder="Full name"></div>
                 <div class="form-group"><label>Email *</label><input type="email" id="empEmail" readonly style="background:#f4f7fb;"></div>
@@ -246,7 +246,13 @@ async function enterUserDashboard(userProfile) {
     currentUserEmail = userProfile.email;
 
     // Hide login/welcome page completely
-    document.getElementById("roleSelection").classList.add("hidden");
+    const roleSection = document.getElementById("roleSelection");
+
+    roleSection.style.display = "none";
+    roleSection.style.height = "0";
+    roleSection.style.minHeight = "0";
+    roleSection.style.padding = "0";
+    roleSection.style.margin = "0";
 
     // Show only user dashboard
     document.getElementById("userSection").classList.remove("hidden");
@@ -269,7 +275,7 @@ async function enterUserDashboard(userProfile) {
         document.getElementById("otherDeptInput").value = deptVal;
     }
 
-    document.getElementById("userWelcomeBadge").innerHTML = `👋 ${userProfile.name}`;
+   
 
     // REMOVE THIS:
     // setupLogoutButton();
@@ -370,7 +376,20 @@ async function enterUserDashboard(userProfile) {
         attachManagerEvents();
     }
     function attachManagerEvents(){ document.querySelectorAll('.ack-checkbox').forEach(c=>c.addEventListener('change', async(e)=>{ const ref=e.target.dataset.ref, idx=parseInt(e.target.dataset.idx), topic=allTopics.find(t=>t.ref===ref); if(topic){ if(e.target.checked && !topic.issues[idx].acknowledged){ topic.issues[idx].acknowledged=true; await pushFullData(); renderManagerDashboard(); } else if(!e.target.checked && topic.issues[idx].acknowledged){ topic.issues[idx].acknowledged=false; topic.issues[idx].managerResponse=""; await pushFullData(); renderManagerDashboard(); } } })); document.querySelectorAll('.priority-select').forEach(s=>s.addEventListener('change', async(e)=>{ const ref=e.target.dataset.ref, idx=e.target.dataset.idx; allTopics.find(t=>t.ref===ref).issues[idx].priority=e.target.value; await pushFullData(); renderManagerDashboard(); })); document.querySelectorAll('.managerFollowUpBtn').forEach(b=>b.addEventListener('click', async(e)=>{ const ref=e.target.dataset.topicRef, id=parseInt(e.target.dataset.itemId), txt=prompt("Manager follow up:"); if(txt && addFollowUpToItem(ref, id, txt, "", true)){ await pushFullData(); renderManagerDashboard(); } })); document.querySelectorAll('.edit-response-btn').forEach(b=>b.addEventListener('click', async(e)=>{ const ref=e.target.dataset.ref, idx=e.target.dataset.idx, topic=allTopics.find(t=>t.ref===ref), newResp=prompt("Edit leadership response:", topic.issues[idx].managerResponse||""); if(newResp!==null){ topic.issues[idx].managerResponse=newResp; await pushFullData(); renderManagerDashboard(); } })); }
-    async function adminLoginFlow() { const email = prompt("Admin email:"); if(email !== ADMIN_EMAIL) return alert("Invalid"); const pwd = prompt("Admin password:"); if(pwd === (localStorage.getItem("admin_password")||DEFAULT_ADMIN_PASSWORD)){ managerLoggedIn=true; document.getElementById("roleSelection").classList.add("hidden"); document.getElementById("managerDashboard").classList.remove("hidden"); document.getElementById("userSection").classList.add("hidden"); setupLogoutButton(); await fetchFullData(); renderManagerDashboard(); if(pollingInterval) clearInterval(pollingInterval); pollingInterval = setInterval(async()=>{ if(managerLoggedIn){ await fetchFullData(); renderManagerDashboard(); } },7000); } else alert("Wrong password"); }
+    async function adminLoginFlow() { const email = prompt("Admin email:"); if(email !== ADMIN_EMAIL) return alert("Invalid"); const pwd = prompt("Admin password:"); if(pwd === (localStorage.getItem("admin_password")||DEFAULT_ADMIN_PASSWORD)){ managerLoggedIn=true; document.getElementById("roleSelection").classList.add("hidden"); document.getElementById("managerDashboard").classList.remove("hidden"); document.getElementById("userSection").classList.add("hidden"); document.querySelector("#userSection h2").insertAdjacentHTML(
+    "afterend",
+    `
+    <button id="insideLogoutBtn"
+        class="outline small"
+        style="margin-left:auto;">
+        🚪 Logout
+    </button>
+    `
+);
+
+     document.getElementById("insideLogoutBtn")
+    .addEventListener("click", logoutUser);
+     await fetchFullData(); renderManagerDashboard(); if(pollingInterval) clearInterval(pollingInterval); pollingInterval = setInterval(async()=>{ if(managerLoggedIn){ await fetchFullData(); renderManagerDashboard(); } },7000); } else alert("Wrong password"); }
 
     // ---------- INIT & EVENT LISTENERS ----------
     window.addEventListener("DOMContentLoaded", async () => {
