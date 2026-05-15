@@ -61,7 +61,7 @@
 <div class="container" id="appContainer">
     <div class="flex-between" style="margin-bottom: 1rem;" id="headerArea">
         <h1>📋 Transition Feedback Portal</h1>
-        <div id="logoutContainer"></div>
+
     </div>
 
     <!-- WELCOME SCREEN -->
@@ -242,24 +242,72 @@
     function showChangePasswordModal() { const html = `<h3>Change Password</h3><input type="password" id="oldPwd" placeholder="Current password"><input type="password" id="newPwd" placeholder="New password"><input type="password" id="confirmPwd" placeholder="Confirm new"><button id="changePwdConfirm" class="primary">Update</button><button id="cancelChangePwd" class="outline">Cancel</button>`; const modal = showModal(html); modal.querySelector("#changePwdConfirm").onclick = async () => { const oldP = modal.querySelector("#oldPwd").value; const newP = modal.querySelector("#newPwd").value; const conf = modal.querySelector("#confirmPwd").value; if(newP !== conf) { alert("Passwords mismatch"); return; } if(!currentUserEmail) return; try { await changeUserPassword(currentUserEmail, oldP, newP); alert("Password changed successfully. Please login again."); await logoutUser(); modal.remove(); } catch(e) { alert(e.message); } }; modal.querySelector("#cancelChangePwd").onclick = () => modal.remove(); }
 
     // ---------- UI FLOW ----------
-    async function enterUserDashboard(userProfile) {
-        currentUserEmail = userProfile.email;
-        document.getElementById("roleSelection").classList.add("hidden");
-        document.getElementById("userSection").classList.remove("hidden");
-        document.getElementById("managerDashboard").classList.add("hidden");
-        document.getElementById("empName").value = userProfile.name;
-        document.getElementById("empEmail").value = userProfile.email;
-        document.getElementById("empLocation").value = userProfile.location;
-        const deptSelect = document.getElementById("empDept"); const deptVal = userProfile.department;
-        if (["Sales","Aftersales","CVM","Operations","Finance","IT","HR"].includes(deptVal)) deptSelect.value = deptVal;
-        else { deptSelect.value = "Other"; document.getElementById("otherDeptContainer").classList.remove("hidden"); document.getElementById("otherDeptInput").value = deptVal; }
-        document.getElementById("userWelcomeBadge").innerHTML = `👋 ${userProfile.name}`;
-        setupLogoutButton();
-        await fetchFullData();
-        renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, currentSearchTerm);
-        if(pollingInterval) clearInterval(pollingInterval);
-        pollingInterval = setInterval(async () => { if(currentUserEmail) { await fetchFullData(); renderUserTopicsByEmail(currentUserEmail, currentUserStatusFilter, currentSearchTerm); } }, 8000);
+async function enterUserDashboard(userProfile) {
+    currentUserEmail = userProfile.email;
+
+    // Hide login/welcome page completely
+    document.getElementById("roleSelection").classList.add("hidden");
+
+    // Show only user dashboard
+    document.getElementById("userSection").classList.remove("hidden");
+
+    // Hide manager dashboard
+    document.getElementById("managerDashboard").classList.add("hidden");
+
+    document.getElementById("empName").value = userProfile.name;
+    document.getElementById("empEmail").value = userProfile.email;
+    document.getElementById("empLocation").value = userProfile.location;
+
+    const deptSelect = document.getElementById("empDept");
+    const deptVal = userProfile.department;
+
+    if (["Sales","Aftersales","CVM","Operations","Finance","IT","HR"].includes(deptVal)) {
+        deptSelect.value = deptVal;
+    } else {
+        deptSelect.value = "Other";
+        document.getElementById("otherDeptContainer").classList.remove("hidden");
+        document.getElementById("otherDeptInput").value = deptVal;
     }
+
+    document.getElementById("userWelcomeBadge").innerHTML = `👋 ${userProfile.name}`;
+
+    // REMOVE THIS:
+    // setupLogoutButton();
+
+    // Add logout button ONLY inside submit feedback section
+    document.getElementById("userWelcomeBadge").insertAdjacentHTML(
+        "afterend",
+        `<button id="insideLogoutBtn" class="outline small" style="margin-left:10px;">
+            🚪 Logout
+        </button>`
+    );
+
+    document.getElementById("insideLogoutBtn")
+        .addEventListener("click", logoutUser);
+
+    await fetchFullData();
+
+    renderUserTopicsByEmail(
+        currentUserEmail,
+        currentUserStatusFilter,
+        currentSearchTerm
+    );
+
+    if (pollingInterval) clearInterval(pollingInterval);
+
+    pollingInterval = setInterval(async () => {
+        if(currentUserEmail){
+            await fetchFullData();
+            renderUserTopicsByEmail(
+                currentUserEmail,
+                currentUserStatusFilter,
+                currentSearchTerm
+            );
+        }
+    }, 8000);
+}
+
+    
     async function logoutUser() { if(pollingInterval) clearInterval(pollingInterval); clearSession(); managerLoggedIn = false; currentUserEmail = null; document.getElementById("userSection").classList.add("hidden"); document.getElementById("managerDashboard").classList.add("hidden"); document.getElementById("roleSelection").classList.remove("hidden"); location.reload(); }
     function setupLogoutButton() { const container = document.getElementById("logoutContainer"); container.innerHTML = `<button id="globalLogoutBtn" class="outline logout-btn">🚪 Logout</button>`; document.getElementById("globalLogoutBtn").addEventListener("click", logoutUser); }
 
