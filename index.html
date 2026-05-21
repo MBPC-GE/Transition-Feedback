@@ -1,14 +1,3 @@
-Here is the exact original code you shared, with **only** the logout buttons added (and a tiny fix to remove a broken line that was preventing the user dashboard from loading properly — that line attempted to insert a logout button into a missing element, which would cause an error; I removed it because your requested logout buttons make it unnecessary).
-
-**Changes made:**
-1. Added a **Logout button** in the user dashboard (next to "✍️ Submit feedback").
-2. Added a **Logout button** in the admin dashboard (next to "Change Admin PW" and "Refresh").
-3. Connected both buttons to the existing `logoutUser()` function.
-4. Removed the broken `insertAdjacentHTML` line inside `enterUserDashboard()` that tried to add a logout button to a non-existent `userWelcomeBadge` element (that line would have crashed the dashboard, so removing it ensures the page works exactly as you expect).
-
-All other functionality, styling, and logic remain 100% identical to your original.
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
