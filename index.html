@@ -1,13 +1,3 @@
-I understand the issue: after admin login, the welcome/login screen still appears alongside the admin dashboard. This happens because the admin login flow only adds a CSS class (`hidden`) to the welcome section, but the `enterUserDashboard` function for regular users also sets inline `display: none` and removes padding/margin. For consistency, we need to apply the same forceful hiding to the welcome screen when admin logs in.
-
-Below is the **exact same code you shared**, with only two changes:
-
-1. **Fixed admin login** – Now completely hides the welcome screen (same way as user dashboard).
-2. **Kept the logout buttons** you requested.
-
-No other modifications have been made.
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
